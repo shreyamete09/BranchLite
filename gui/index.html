@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BranchLite - Visual Version Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent: #a855f7;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --code-bg: #0b0f19;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+    }
+    .brand-badge {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #0f172a;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .branch-pill {
+      background: #0284c726;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .branch-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 340px 1fr 420px;
+      gap: 16px;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--card-border);
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-body {
+      padding: 16px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .btn {
+      background: #334155;
+      color: var(--text);
+      border: 1px solid #475569;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn:hover { background: #475569; border-color: #64748b; }
+    .btn-primary { background: var(--primary); color: #0f172a; border-color: var(--primary); font-weight: 600; }
+    .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); color: white; }
+    .btn-accent { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn-accent:hover { background: #9333ea; }
+    .btn-danger { background: #ef444422; color: #f87171; border-color: #ef444455; }
+    .btn-danger:hover { background: #ef4444; color: white; }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    input, select {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-family: 'Fira Code', monospace;
+    }
+    .badge-primary { background: #0284c733; color: var(--primary); border: 1px solid #0284c788; }
+    .badge-accent { background: #a855f733; color: var(--accent); border: 1px solid #a855f788; }
+    .badge-success { background: #22c55e33; color: var(--success); border: 1px solid #22c55e88; }
+
+    /* File List Items */
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: #0f172a88;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .file-hash { color: var(--text-muted); font-size: 0.75rem; }
+
+    /* Commit Graph / Timeline */
+    .commit-card {
+      background: #0f172a88;
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+    .commit-card.is-merge {
+      border-left-color: var(--accent);
+      background: #3b07641a;
+    }
+    .commit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .commit-id {
+      font-family: 'Fira Code', monospace;
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 0.85rem;
+    }
+    .commit-card.is-merge .commit-id { color: var(--accent); }
+    .commit-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .commit-msg {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    .commit-parents {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'Fira Code', monospace;
+    }
+
+    /* Terminal Console */
+    #terminal {
+      background: var(--code-bg);
+      border-top: 1px solid var(--card-border);
+      padding: 12px 16px;
+      height: 160px;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+      line-height: 1.5;
+    }
+    .term-err { color: #f87171; }
+    .term-cmd { color: #4ade80; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span>BranchLite VCS</span>
+      <span class="brand-badge">OOP Project</span>
+    </div>
+    <div id="branchIndicator" class="branch-pill">main</div>
+  </header>
+
+  <main>
+    <!-- Left Column: Operations -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>Git Operations</span>
+        <button class="btn btn-primary" onclick="initRepo()" style="padding: 4px 10px; font-size: 0.75rem;">Init</button>
+      </div>
+      <div class="panel-body">
+        
+        <!-- Stage / Add Section -->
+        <div class="input-group">
+          <label>Stage File (Add)</label>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" id="addFileName" placeholder="e.g. a.txt" style="flex: 1;">
+            <button class="btn btn-primary" onclick="addFile()">Stage</button>
+          </div>
+        </div>
+
+        <!-- Commit Section -->
+        <div class="input-group">
+          <label>Commit Staged Changes</label>
+          <input type="text" id="commitMsg" placeholder="Commit message...">
+          <button class="btn btn-primary" onclick="commitChanges()" style="margin-top: 4px;">Commit (-m)</button>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 6px 0;">
+
+        <!-- Branch Section -->
+        <div class="input-group">
+          <label>Branch Management</label>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" id="newBranchName" placeholder="Branch name..." style="flex: 1;">
+            <button class="btn" onclick="createBranch()">Create</button>
+          </div>
+          <div style="display: flex; gap: 6px; margin-top: 4px;">
+            <select id="branchSelect" style="flex: 1;"></select>
+            <button class="btn btn-primary" onclick="checkoutBranch()">Checkout</button>
+          </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 6px 0;">
+
+        <!-- 3-Way Merge Section -->
+        <div class="input-group">
+          <label>3-Way Merge</label>
+          <div style="display: flex; gap: 6px;">
+            <select id="mergeBranchSelect" style="flex: 1;"></select>
+            <button class="btn btn-accent" onclick="mergeBranch()">Merge into HEAD</button>
+          </div>
+        </div>
+
+        <!-- Reset / Undo Section -->
+        <div class="input-group" style="margin-top: 6px;">
+          <label>Undo / Mistake (Reset)</label>
+          <button class="btn btn-danger" onclick="resetCommit()">Undo Latest Commit (reset)</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Center Column: Visual Commit Tree & Timeline -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>Commit Graph & History</span>
+        <button class="btn" onclick="fetchStatus()" style="padding: 4px 10px; font-size: 0.75rem;">Refresh</button>
+      </div>
+      <div class="panel-body" id="commitList">
+        <!-- Commits rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Right Column: Staging Area & Repository State -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>Staging Area & Working Tree</span>
+      </div>
+      <div class="panel-body">
+        
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted);">
+              Staging Index (.branchlite/index)
+            </span>
+            <span id="stagedCount" class="badge badge-success">0 files</span>
+          </div>
+          <div id="stagedList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 8px 0;">
+
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted);">
+              Working Directory Files
+            </span>
+          </div>
+          <div id="workingList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Console Terminal Output -->
+  <div id="terminal">
+    <div>BranchLite Interactive Console ready. Type operations or click buttons above...</div>
+  </div>
+
+  <script>
+    const term = document.getElementById('terminal');
+
+    function logTerm(msg, isErr = false, isCmd = false) {
+      const line = document.createElement('div');
+      if (isCmd) {
+        line.className = 'term-cmd';
+        line.textContent = '$ ' + msg;
+      } else if (isErr) {
+        line.className = 'term-err';
+        line.textContent = msg;
+      } else {
+        line.textContent = msg;
+      }
+      term.appendChild(line);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    async function executeCmd(args) {
+      logTerm('branchlite ' + args.join(' '), false, true);
+      try {
+        const res = await fetch('/api/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ args })
+        });
+        const data = await res.json();
+        if (data.stdout) logTerm(data.stdout.trim());
+        if (data.stderr) logTerm(data.stderr.trim(), true);
+        renderState(data.status);
+      } catch (err) {
+        logTerm('Network error: ' + err.message, true);
+      }
+    }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const status = await res.json();
+        renderState(status);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderState(status) {
+      if (!status) return;
+
+      // Update current branch
+      document.getElementById('branchIndicator').textContent = status.currentBranch || 'uninitialized';
+
+      // Update branch dropdowns
+      const branchSel = document.getElementById('branchSelect');
+      const mergeSel = document.getElementById('mergeBranchSelect');
+      branchSel.innerHTML = '';
+      mergeSel.innerHTML = '';
+
+      (status.branches || []).forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.name;
+        opt.textContent = b.name + (b.name === status.currentBranch ? ' (current)' : '');
+        branchSel.appendChild(opt);
+
+        if (b.name !== status.currentBranch) {
+          const opt2 = document.createElement('option');
+          opt2.value = b.name;
+          opt2.textContent = b.name;
+          mergeSel.appendChild(opt2);
+        }
+      });
+
+      // Update Staging Area
+      const stagedList = document.getElementById('stagedList');
+      stagedList.innerHTML = '';
+      document.getElementById('stagedCount').textContent = (status.stagedFiles || []).length + ' files';
+      (status.stagedFiles || []).forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `<span>${f.file}</span><span class="file-hash">${f.hash.substring(0, 8)}</span>`;
+        stagedList.appendChild(item);
+      });
+
+      // Update Working Files
+      const workingList = document.getElementById('workingList');
+      workingList.innerHTML = '';
+      (status.workingFiles || []).forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `<span>${f}</span><button class="btn" style="padding: 2px 8px; font-size: 0.75rem;" onclick="quickStage('${f}')">+ Stage</button>`;
+        workingList.appendChild(item);
+      });
+
+      // Update Commit Timeline
+      const commitList = document.getElementById('commitList');
+      commitList.innerHTML = '';
+
+      if (!status.commits || status.commits.length === 0) {
+        commitList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-top: 40px;">No commits recorded yet. Create and stage a file, then make your first commit!</div>';
+        return;
+      }
+
+      status.commits.forEach(c => {
+        const card = document.createElement('div');
+        const isMerge = c.parent2 && c.parent2 !== '-';
+        card.className = 'commit-card' + (isMerge ? ' is-merge' : '');
+
+        let parentBadges = `<span class="badge badge-primary">P1: ${c.parent.substring(0, 7)}</span>`;
+        if (isMerge) {
+          parentBadges += ` <span class="badge badge-accent">P2 (Merge): ${c.parent2.substring(0, 7)}</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="commit-header">
+            <span class="commit-id">${c.id.substring(0, 8)}</span>
+            <span class="commit-time">${c.time}</span>
+          </div>
+          <div class="commit-msg">${c.message}</div>
+          <div class="commit-parents">${parentBadges}</div>
+        `;
+        commitList.appendChild(card);
+      });
+    }
+
+    function initRepo() { executeCmd(['init']); }
+    function addFile() {
+      const file = document.getElementById('addFileName').value.trim();
+      if (!file) return;
+      executeCmd(['add', file]);
+      document.getElementById('addFileName').value = '';
+    }
+    function quickStage(filename) {
+      executeCmd(['add', filename]);
+    }
+    function commitChanges() {
+      const msg = document.getElementById('commitMsg').value.trim();
+      if (!msg) return alert('Please enter a commit message');
+      executeCmd(['commit', '-m', msg]);
+      document.getElementById('commitMsg').value = '';
+    }
+    function createBranch() {
+      const name = document.getElementById('newBranchName').value.trim();
+      if (!name) return;
+      executeCmd(['branch', name]);
+      document.getElementById('newBranchName').value = '';
+    }
+    function checkoutBranch() {
+      const name = document.getElementById('branchSelect').value;
+      if (!name) return;
+      executeCmd(['checkout', name]);
+    }
+    function mergeBranch() {
+      const name = document.getElementById('mergeBranchSelect').value;
+      if (!name) return alert('No branch selected to merge');
+      executeCmd(['merge', name]);
+    }
+    function resetCommit() {
+      if (confirm('Undo the latest commit on the current branch? (Files will remain in working tree)')) {
+        executeCmd(['reset']);
+      }
+    }
+
+    // Initial load
+    fetchStatus();
+  </script>
+</body>
+</html>

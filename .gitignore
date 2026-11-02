@@ -1,0 +1,11 @@
+
+# Compiled program
+*.exe
+*.o
+*.obj
+
+# Editor settings
+.vscode/
+
+# Local application data
+.branchlite/
