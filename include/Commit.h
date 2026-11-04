@@ -7,17 +7,17 @@
 // Forward declaration for friend class / function
 class Repository;
 
-// Represents a snapshot of the repository at a specific point in time.
+
 class Commit {
 private:
     std::string id_;
     std::string parent_;
-    std::string parent2_; // Second parent for merge commits ("" or "-" if none)
+    std::string parent2_; 
     std::string timestamp_;
     std::string message_;
     std::map<std::string, std::string> files_; // filename -> hash
 
-    // Static member variable: tracks total Commit objects created in memory
+    
     static int commitObjectCount_;
 
 public:

@@ -1,534 +1,1373 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>BranchLite - Visual Version Control</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --card-border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #38bdf8;
-      --primary-hover: #0284c7;
-      --accent: #a855f7;
-      --success: #22c55e;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --code-bg: #0b0f19;
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BranchLite VCS - Developer Studio</title>
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts for Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+            },
+            dark: {
+              base: '#080a0f',
+              panel: '#0d1117',
+              surface: '#131822',
+              input: '#0b0f17',
+              border: '#1f2937',
+              borderLight: '#30363d',
+            },
+            accent: {
+              cyan: '#38bdf8',
+              violet: '#a855f7',
+              emerald: '#10b981',
+              rose: '#f43f5e',
+              amber: '#f59e0b'
+            }
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 15px -3px rgba(56, 189, 248, 0.25)',
+            'glow-violet': '0 0 15px -3px rgba(168, 85, 247, 0.3)',
+            'inner-subtle': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+          }
+        }
+      }
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
+  </script>
+<!-- Custom Scrollbar and Canvas Grid Styles -->
+<style data-purpose="custom-scrollbars">
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
     }
-
-    header {
-      background: rgba(30, 41, 59, 0.85);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--card-border);
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      font-size: 1.25rem;
-      letter-spacing: -0.5px;
+    ::-webkit-scrollbar-thumb {
+      background: #252d3d;
+      border-radius: 9999px;
     }
-    .brand-badge {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: #0f172a;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 700;
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b465c;
     }
-
-    .branch-pill {
-      background: #0284c726;
-      border: 1px solid var(--primary);
-      color: var(--primary);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+  </style>
+<style data-purpose="graph-grid-pattern">
+    .dot-pattern {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+      background-size: 20px 20px;
     }
-    .branch-pill::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--primary);
-      box-shadow: 0 0 10px var(--primary);
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
-
-    main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 340px 1fr 420px;
-      gap: 16px;
-      padding: 16px;
-      overflow: hidden;
+    .status-pulse {
+      animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-
-    .panel {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    .panel-header {
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--card-border);
-      font-weight: 600;
-      font-size: 0.95rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .anim-in { animation: fadeSlideIn 0.22s ease forwards; }
+    .drop-active {
+      border-color: #38bdf8 !important;
+      background: rgba(56, 189, 248, 0.08) !important;
     }
-    .panel-body {
-      padding: 16px;
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+    /* Diff lines */
+    .diff-row-add {
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      border-left: 2px solid #10b981;
     }
-
-    .btn {
-      background: #334155;
-      color: var(--text);
-      border: 1px solid #475569;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .diff-row-del {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fda4af;
+      border-left: 2px solid #f43f5e;
     }
-    .btn:hover { background: #475569; border-color: #64748b; }
-    .btn-primary { background: var(--primary); color: #0f172a; border-color: var(--primary); font-weight: 600; }
-    .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); color: white; }
-    .btn-accent { background: var(--accent); color: white; border-color: var(--accent); }
-    .btn-accent:hover { background: #9333ea; }
-    .btn-danger { background: #ef444422; color: #f87171; border-color: #ef444455; }
-    .btn-danger:hover { background: #ef4444; color: white; }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .diff-row-same {
+      color: #94a3b8;
+      border-left: 2px solid transparent;
     }
-    .input-group label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
+    .gutter-num {
+      user-select: none;
+      min-width: 2.2rem;
+      text-align: right;
+      padding-right: 0.5rem;
+      color: #475569;
     }
-    input, select {
-      background: var(--code-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-family: inherit;
-      outline: none;
-    }
-    input:focus, select:focus {
-      border-color: var(--primary);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-family: 'Fira Code', monospace;
-    }
-    .badge-primary { background: #0284c733; color: var(--primary); border: 1px solid #0284c788; }
-    .badge-accent { background: #a855f733; color: var(--accent); border: 1px solid #a855f788; }
-    .badge-success { background: #22c55e33; color: var(--success); border: 1px solid #22c55e88; }
-
-    /* File List Items */
-    .file-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: #0f172a88;
-      border: 1px solid var(--card-border);
-      border-radius: 6px;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.85rem;
-    }
-    .file-hash { color: var(--text-muted); font-size: 0.75rem; }
-
-    /* Commit Graph / Timeline */
-    .commit-card {
-      background: #0f172a88;
-      border: 1px solid var(--card-border);
-      border-left: 4px solid var(--primary);
-      border-radius: 8px;
-      padding: 12px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      position: relative;
-    }
-    .commit-card.is-merge {
-      border-left-color: var(--accent);
-      background: #3b07641a;
-    }
-    .commit-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .commit-id {
-      font-family: 'Fira Code', monospace;
-      font-weight: 600;
-      color: var(--primary);
-      font-size: 0.85rem;
-    }
-    .commit-card.is-merge .commit-id { color: var(--accent); }
-    .commit-time {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-    .commit-msg {
-      font-size: 0.95rem;
-      font-weight: 500;
-    }
-    .commit-parents {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-family: 'Fira Code', monospace;
-    }
-
-    /* Terminal Console */
-    #terminal {
-      background: var(--code-bg);
-      border-top: 1px solid var(--card-border);
-      padding: 12px 16px;
-      height: 160px;
-      overflow-y: auto;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.85rem;
-      color: #38bdf8;
-      line-height: 1.5;
-    }
-    .term-err { color: #f87171; }
-    .term-cmd { color: #4ade80; font-weight: 600; }
   </style>
 </head>
-<body>
+<body class="bg-dark-base text-slate-200 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500/30 selection:text-brand-400 overflow-x-hidden">
 
-  <header>
-    <div class="brand">
-      <span>BranchLite VCS</span>
-      <span class="brand-badge">OOP Project</span>
+<!-- ═══════════════════════════════════════════ -->
+<!-- TOP NAVIGATION BAR                         -->
+<!-- ═══════════════════════════════════════════ -->
+<header class="h-14 border-b border-dark-border bg-dark-panel/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40">
+  <!-- Brand & Project Meta -->
+  <div class="flex items-center gap-3.5">
+    <!-- Git Branch Icon Emblem -->
+    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-accent-violet flex items-center justify-center shadow-glow-violet ring-1 ring-white/20">
+      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <circle cx="6" cy="6" fill="currentColor" r="2.5"></circle>
+        <circle cx="18" cy="18" fill="currentColor" r="2.5"></circle>
+        <path d="M6 8.5v7a2.5 2.5 0 002.5 2.5H15.5"></path>
+      </svg>
     </div>
-    <div id="branchIndicator" class="branch-pill">main</div>
-  </header>
-
-  <main>
-    <!-- Left Column: Operations -->
-    <div class="panel">
-      <div class="panel-header">
-        <span>Git Operations</span>
-        <button class="btn btn-primary" onclick="initRepo()" style="padding: 4px 10px; font-size: 0.75rem;">Init</button>
-      </div>
-      <div class="panel-body">
-        
-        <!-- Stage / Add Section -->
-        <div class="input-group">
-          <label>Stage File (Add)</label>
-          <div style="display: flex; gap: 6px;">
-            <input type="text" id="addFileName" placeholder="e.g. a.txt" style="flex: 1;">
-            <button class="btn btn-primary" onclick="addFile()">Stage</button>
-          </div>
-        </div>
-
-        <!-- Commit Section -->
-        <div class="input-group">
-          <label>Commit Staged Changes</label>
-          <input type="text" id="commitMsg" placeholder="Commit message...">
-          <button class="btn btn-primary" onclick="commitChanges()" style="margin-top: 4px;">Commit (-m)</button>
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 6px 0;">
-
-        <!-- Branch Section -->
-        <div class="input-group">
-          <label>Branch Management</label>
-          <div style="display: flex; gap: 6px;">
-            <input type="text" id="newBranchName" placeholder="Branch name..." style="flex: 1;">
-            <button class="btn" onclick="createBranch()">Create</button>
-          </div>
-          <div style="display: flex; gap: 6px; margin-top: 4px;">
-            <select id="branchSelect" style="flex: 1;"></select>
-            <button class="btn btn-primary" onclick="checkoutBranch()">Checkout</button>
-          </div>
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 6px 0;">
-
-        <!-- 3-Way Merge Section -->
-        <div class="input-group">
-          <label>3-Way Merge</label>
-          <div style="display: flex; gap: 6px;">
-            <select id="mergeBranchSelect" style="flex: 1;"></select>
-            <button class="btn btn-accent" onclick="mergeBranch()">Merge into HEAD</button>
-          </div>
-        </div>
-
-        <!-- Reset / Undo Section -->
-        <div class="input-group" style="margin-top: 6px;">
-          <label>Undo / Mistake (Reset)</label>
-          <button class="btn btn-danger" onclick="resetCommit()">Undo Latest Commit (reset)</button>
-        </div>
-
-      </div>
+    <div class="flex items-center gap-2.5">
+      <span class="font-bold text-base tracking-tight text-white flex items-center">
+        BranchLite <span class="text-accent-cyan ml-1 font-semibold">VCS</span>
+      </span>
+      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium tracking-wide bg-accent-violet/15 text-accent-violet border border-accent-violet/30 shadow-sm">
+        OOP Project
+      </span>
     </div>
-
-    <!-- Center Column: Visual Commit Tree & Timeline -->
-    <div class="panel">
-      <div class="panel-header">
-        <span>Commit Graph & History</span>
-        <button class="btn" onclick="fetchStatus()" style="padding: 4px 10px; font-size: 0.75rem;">Refresh</button>
-      </div>
-      <div class="panel-body" id="commitList">
-        <!-- Commits rendered dynamically -->
-      </div>
-    </div>
-
-    <!-- Right Column: Staging Area & Repository State -->
-    <div class="panel">
-      <div class="panel-header">
-        <span>Staging Area & Working Tree</span>
-      </div>
-      <div class="panel-body">
-        
-        <div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted);">
-              Staging Index (.branchlite/index)
-            </span>
-            <span id="stagedCount" class="badge badge-success">0 files</span>
-          </div>
-          <div id="stagedList" style="display: flex; flex-direction: column; gap: 6px;"></div>
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 8px 0;">
-
-        <div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted);">
-              Working Directory Files
-            </span>
-          </div>
-          <div id="workingList" style="display: flex; flex-direction: column; gap: 6px;"></div>
-        </div>
-
-      </div>
-    </div>
-  </main>
-
-  <!-- Bottom Console Terminal Output -->
-  <div id="terminal">
-    <div>BranchLite Interactive Console ready. Type operations or click buttons above...</div>
   </div>
 
-  <script>
-    const term = document.getElementById('terminal');
+  <!-- Global Operations & Status -->
+  <div class="flex items-center gap-3">
+    <!-- Quick Explorer & Diff Pills -->
+    <button class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-accent-cyan bg-cyan-950/30 hover:bg-cyan-950/60 border border-cyan-800/40 transition active:scale-95" type="button" onclick="switchRightTab('explorer')">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      <span>File Explorer</span>
+    </button>
+    <button class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-accent-violet bg-purple-950/30 hover:bg-purple-950/60 border border-purple-800/40 transition active:scale-95" type="button" onclick="switchRightTab('diff')">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      <span>Diff Viewer</span>
+    </button>
 
-    function logTerm(msg, isErr = false, isCmd = false) {
-      const line = document.createElement('div');
-      if (isCmd) {
-        line.className = 'term-cmd';
-        line.textContent = '$ ' + msg;
-      } else if (isErr) {
-        line.className = 'term-err';
-        line.textContent = msg;
-      } else {
-        line.textContent = msg;
-      }
-      term.appendChild(line);
-      term.scrollTop = term.scrollHeight;
-    }
+    <!-- Reset VCS State Button -->
+    <button class="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-rose-300 hover:text-rose-100 bg-rose-950/20 hover:bg-rose-950/40 border border-rose-900/40 hover:border-rose-700/60 transition-all duration-200 shadow-sm active:scale-95" id="btn-reset-vcs" type="button">
+      <svg class="w-3.5 h-3.5 text-rose-400 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      </svg>
+      <span>Delete All &amp; Reset Fresh</span>
+    </button>
+    <!-- Active Branch Dropdown Pill -->
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-200 bg-dark-surface border border-dark-borderLight shadow-inner-subtle">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 status-pulse shadow-[0_0_8px_#34d399]"></span>
+      <span class="text-slate-400 text-[11px]">branch:</span>
+      <span class="text-accent-cyan font-semibold" id="branchIndicator">main</span>
+    </div>
+  </div>
+</header>
 
-    async function executeCmd(args) {
-      logTerm('branchlite ' + args.join(' '), false, true);
-      try {
-        const res = await fetch('/api/execute', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ args })
-        });
-        const data = await res.json();
-        if (data.stdout) logTerm(data.stdout.trim());
-        if (data.stderr) logTerm(data.stderr.trim(), true);
-        renderState(data.status);
-      } catch (err) {
-        logTerm('Network error: ' + err.message, true);
-      }
-    }
+<!-- ═══════════════════════════════════════════ -->
+<!-- MAIN THREE-COLUMN LAYOUT                   -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3.5 p-3.5 sm:p-4 overflow-hidden max-w-[1920px] w-full mx-auto">
 
-    async function fetchStatus() {
-      try {
-        const res = await fetch('/api/status');
-        const status = await res.json();
-        renderState(status);
-      } catch (err) {
-        console.error(err);
-      }
-    }
+  <!-- ========================================== -->
+  <!-- COLUMN 1: Git Operations (Left Panel)      -->
+  <!-- ========================================== -->
+  <section class="lg:col-span-3 flex flex-col bg-dark-panel border border-dark-border rounded-xl shadow-xl overflow-hidden">
+    <!-- Section Header -->
+    <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-surface/40">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-200">Git Operations</h2>
+      </div>
+      <button class="inline-flex items-center px-2 py-0.5 text-[11px] font-mono font-medium rounded-md bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30 hover:bg-accent-cyan/25 transition-colors" id="btn-init-repo" title="Initialize BranchLite repository">
+        Init
+      </button>
+    </div>
 
-    function renderState(status) {
-      if (!status) return;
-
-      // Update current branch
-      document.getElementById('branchIndicator').textContent = status.currentBranch || 'uninitialized';
-
-      // Update branch dropdowns
-      const branchSel = document.getElementById('branchSelect');
-      const mergeSel = document.getElementById('mergeBranchSelect');
-      branchSel.innerHTML = '';
-      mergeSel.innerHTML = '';
-
-      (status.branches || []).forEach(b => {
-        const opt = document.createElement('option');
-        opt.value = b.name;
-        opt.textContent = b.name + (b.name === status.currentBranch ? ' (current)' : '');
-        branchSel.appendChild(opt);
-
-        if (b.name !== status.currentBranch) {
-          const opt2 = document.createElement('option');
-          opt2.value = b.name;
-          opt2.textContent = b.name;
-          mergeSel.appendChild(opt2);
-        }
-      });
-
-      // Update Staging Area
-      const stagedList = document.getElementById('stagedList');
-      stagedList.innerHTML = '';
-      document.getElementById('stagedCount').textContent = (status.stagedFiles || []).length + ' files';
-      (status.stagedFiles || []).forEach(f => {
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        item.innerHTML = `<span>${f.file}</span><span class="file-hash">${f.hash.substring(0, 8)}</span>`;
-        stagedList.appendChild(item);
-      });
-
-      // Update Working Files
-      const workingList = document.getElementById('workingList');
-      workingList.innerHTML = '';
-      (status.workingFiles || []).forEach(f => {
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        item.innerHTML = `<span>${f}</span><button class="btn" style="padding: 2px 8px; font-size: 0.75rem;" onclick="quickStage('${f}')">+ Stage</button>`;
-        workingList.appendChild(item);
-      });
-
-      // Update Commit Timeline
-      const commitList = document.getElementById('commitList');
-      commitList.innerHTML = '';
-
-      if (!status.commits || status.commits.length === 0) {
-        commitList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-top: 40px;">No commits recorded yet. Create and stage a file, then make your first commit!</div>';
-        return;
-      }
-
-      status.commits.forEach(c => {
-        const card = document.createElement('div');
-        const isMerge = c.parent2 && c.parent2 !== '-';
-        card.className = 'commit-card' + (isMerge ? ' is-merge' : '');
-
-        let parentBadges = `<span class="badge badge-primary">P1: ${c.parent.substring(0, 7)}</span>`;
-        if (isMerge) {
-          parentBadges += ` <span class="badge badge-accent">P2 (Merge): ${c.parent2.substring(0, 7)}</span>`;
-        }
-
-        card.innerHTML = `
-          <div class="commit-header">
-            <span class="commit-id">${c.id.substring(0, 8)}</span>
-            <span class="commit-time">${c.time}</span>
+    <!-- Action Forms Container -->
+    <div class="p-4 space-y-5 overflow-y-auto flex-1">
+      <!-- OP 1: STAGE FILE (ADD) -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400" for="input-stage-file">
+            Stage File (ADD)
+          </label>
+          <span class="text-[10px] font-mono text-slate-500">git add &lt;file&gt; or .</span>
+        </div>
+        <div class="flex gap-2">
+          <div class="relative flex-1">
+            <input class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2 px-3 placeholder-slate-600 outline-none transition" id="input-stage-file" placeholder="e.g. main.cpp or ." type="text"/>
           </div>
-          <div class="commit-msg">${c.message}</div>
-          <div class="commit-parents">${parentBadges}</div>
-        `;
-        commitList.appendChild(card);
+          <button class="px-3.5 py-2 bg-gradient-to-r from-accent-cyan to-brand-500 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-semibold text-xs rounded-lg shadow-sm hover:shadow-glow-cyan transition-all active:scale-95 flex items-center gap-1" id="btn-stage-manual" type="button">
+            Stage
+          </button>
+        </div>
+      </div>
+
+      <!-- OP 2: COMMIT STAGED CHANGES -->
+      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400" for="input-commit-msg">
+            Commit Staged Changes
+          </label>
+          <button type="button" class="text-[10px] text-accent-cyan hover:underline font-mono" onclick="previewStagedDiff()">± View Diff</button>
+        </div>
+        <input class="w-full bg-dark-input text-slate-200 text-xs rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2.5 px-3 placeholder-slate-600 outline-none transition font-sans" id="input-commit-msg" placeholder="Commit message..." type="text"/>
+        <button class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-lg shadow-inner-subtle hover:shadow-glow-violet transition-all active:scale-[0.98] flex items-center justify-center gap-1.5" id="btn-commit-action" type="button">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          <span>Commit (-m)</span>
+        </button>
+      </div>
+
+      <!-- OP 3: BRANCH MANAGEMENT -->
+      <div class="space-y-2.5 pt-2 border-t border-dark-border/60">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+            Branch Management
+          </label>
+          <span class="text-[10px] font-mono text-slate-500">git checkout -b</span>
+        </div>
+        <!-- Create Branch Input -->
+        <div class="flex gap-2">
+          <input class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2 px-3 placeholder-slate-600 outline-none transition" id="input-branch-name" placeholder="Branch name..." type="text"/>
+          <button class="px-3 py-2 bg-dark-surface hover:bg-slate-800 text-slate-200 hover:text-white border border-dark-border hover:border-slate-600 text-xs font-medium rounded-lg transition active:scale-95" id="btn-create-branch" type="button">
+            Create
+          </button>
+        </div>
+        <!-- Switch/Checkout Branch Selector -->
+        <div class="flex gap-2 pt-1">
+          <div class="relative flex-1">
+            <select class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer" id="select-checkout-branch">
+            </select>
+            <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </div>
+          <button class="px-3 py-2 bg-accent-cyan/15 hover:bg-accent-cyan/25 text-accent-cyan border border-accent-cyan/30 text-xs font-medium rounded-lg transition active:scale-95 whitespace-nowrap" id="btn-checkout-branch" type="button">
+            Checkout
+          </button>
+        </div>
+      </div>
+
+      <!-- OP 4: 3-WAY MERGE WITH PRE-MERGE DIFF PREVIEW -->
+      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+            3-Way Merge
+          </label>
+          <span class="text-[10px] font-mono text-slate-500">git merge &lt;target&gt;</span>
+        </div>
+        <div class="relative">
+          <select class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer" id="select-merge-branch">
+          </select>
+          <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <!-- Dual Action Buttons: Preview Diff & Merge -->
+        <div class="grid grid-cols-2 gap-2">
+          <button class="py-2 px-2 bg-dark-surface hover:bg-purple-950/40 text-purple-300 hover:text-white border border-purple-800/40 font-medium text-xs rounded-lg transition active:scale-[0.98] flex items-center justify-center gap-1 shadow-sm" id="btn-merge-diff" onclick="previewMergeDiff()" type="button" title="Inspect changes in target branch before merging">
+            <svg class="w-3.5 h-3.5 text-accent-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+            <span>Preview Diff</span>
+          </button>
+          <button class="py-2 px-2 bg-accent-violet hover:bg-purple-600 text-white font-medium text-xs rounded-lg shadow-sm hover:shadow-glow-violet transition active:scale-[0.98] flex items-center justify-center gap-1" id="btn-merge-action" type="button">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+            <span>Merge to HEAD</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- OP 5: RESET / UNDO -->
+      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+            Undo Last Commit
+          </label>
+          <span class="text-[10px] font-mono text-slate-500">git reset</span>
+        </div>
+        <button class="w-full py-2 bg-rose-950/30 hover:bg-rose-950/50 text-rose-300 hover:text-rose-200 font-medium text-xs rounded-lg border border-rose-900/40 hover:border-rose-700/60 transition active:scale-[0.98] flex items-center justify-center gap-1.5" id="btn-reset-commit" type="button">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M3 10h10a5 5 0 015 5v2M3 10l4-4m-4 4l4 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          <span>Reset (undo commit)</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- COLUMN 2: Commit Graph & History (Center)  -->
+  <!-- ========================================== -->
+  <section class="lg:col-span-5 flex flex-col bg-dark-panel border border-dark-border rounded-xl shadow-xl overflow-hidden dot-pattern relative">
+    <!-- Section Header -->
+    <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-surface/70 backdrop-blur-sm z-10">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-4 h-4 text-accent-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-200">Commit Graph &amp; History</h2>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-dark-surface text-slate-400 border border-dark-border" id="commitCountBadge">
+          0 commits
+        </span>
+      </div>
+      <button class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg text-slate-300 hover:text-white bg-dark-surface hover:bg-slate-800 border border-dark-border hover:border-slate-600 transition" id="btn-refresh-graph" title="Refresh Git Commit Graph" type="button">
+        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <span>Refresh</span>
+      </button>
+    </div>
+    <!-- Graph Viewport & Commits Timeline -->
+    <div class="flex-1 p-4 overflow-y-auto space-y-4 relative" id="commitList">
+      <!-- Empty state (shown dynamically) -->
+      <div class="flex flex-col items-center justify-center h-full text-center py-12" id="emptyCommitState">
+        <div class="w-16 h-16 rounded-full bg-dark-surface border border-dark-border flex items-center justify-center mb-4">
+          <svg class="w-7 h-7 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+          </svg>
+        </div>
+        <p class="text-sm text-slate-400 font-medium mb-1">No commits yet</p>
+        <p class="text-xs text-slate-500">Upload or create a file, stage it, and make your first commit!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- COLUMN 3: Right Panel with Tabs            -->
+  <!-- Staging / File Explorer / Diff Viewer      -->
+  <!-- ========================================== -->
+  <section class="lg:col-span-4 flex flex-col bg-dark-panel border border-dark-border rounded-xl shadow-xl overflow-hidden">
+    <!-- Header with 3 Interactive Tabs -->
+    <div class="px-3 py-2 border-b border-dark-border flex items-center justify-between bg-dark-surface/50">
+      <div class="flex items-center gap-1 p-0.5 rounded-lg bg-dark-base border border-dark-border">
+        <!-- Tab 1: Staging -->
+        <button class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 bg-dark-surface text-accent-cyan shadow-sm border border-accent-cyan/30" id="tab-btn-staging" type="button" onclick="switchRightTab('staging')">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <span>Staging</span>
+        </button>
+        <!-- Tab 2: Explorer -->
+        <button class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 text-slate-400 hover:text-slate-200" id="tab-btn-explorer" type="button" onclick="switchRightTab('explorer')">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <span>Explorer</span>
+        </button>
+        <!-- Tab 3: Diff -->
+        <button class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 text-slate-400 hover:text-slate-200" id="tab-btn-diff" type="button" onclick="switchRightTab('diff')">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <span>Diff</span>
+        </button>
+      </div>
+      <button class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-surface transition" onclick="openExpandedModal()" title="Open expanded modal view" type="button">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      </button>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- TAB PANE 1: STAGING AREA & FILE MANAGER    -->
+    <!-- ────────────────────────────────────────── -->
+    <div id="tab-pane-staging" class="p-4 space-y-4 overflow-y-auto flex-1">
+      <!-- MODULE A: UPLOAD FILE FROM DESKTOP -->
+      <div class="space-y-2">
+        <span class="text-[11px] font-semibold tracking-wider uppercase text-slate-400 block">
+          Upload File from Desktop
+        </span>
+        <div class="group border-2 border-dashed border-dark-borderLight hover:border-accent-cyan/60 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 bg-dark-input hover:bg-dark-surface" id="dropzone">
+          <div class="w-10 h-10 rounded-full bg-slate-800/80 group-hover:bg-cyan-950/60 flex items-center justify-center mb-2 text-slate-400 group-hover:text-accent-cyan transition-colors">
+            <svg class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </div>
+          <p class="text-xs font-medium text-slate-200 mb-0.5">
+            Click to choose file or drag &amp; drop
+          </p>
+          <p class="text-[11px] text-slate-500">
+            Files will be stored in workspace ready to stage
+          </p>
+          <div class="mt-2.5 flex items-center gap-1.5">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-dark-surface rounded border border-dark-border text-slate-400">.cpp</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-dark-surface rounded border border-dark-border text-slate-400">.h</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-dark-surface rounded border border-dark-border text-slate-400">.txt</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-dark-surface rounded border border-dark-border text-slate-400">.py</span>
+          </div>
+        </div>
+        <input type="file" id="fileUploadInput" class="hidden"/>
+      </div>
+
+      <!-- MODULE B: STAGING INDEX -->
+      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+            Staging Index <span class="text-slate-500 font-mono">(.branchlite/index)</span>
+          </span>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-950/50 text-emerald-400 border border-emerald-800/40" id="stagedCountBadge">
+            0 staged
+          </span>
+        </div>
+        <!-- Staged Items List -->
+        <div class="space-y-1.5" id="staged-files-list"></div>
+      </div>
+
+      <!-- MODULE C: WORKSPACE FILES -->
+      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+            Workspace Files
+          </span>
+          <span class="text-[11px] text-slate-500 font-mono" id="workingCountLabel">0 detected</span>
+        </div>
+        <!-- File Items List -->
+        <div class="space-y-1.5" id="workspace-files-list"></div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- TAB PANE 2: REUSABLE FILE EXPLORER         -->
+    <!-- ────────────────────────────────────────── -->
+    <div id="tab-pane-explorer" class="p-4 space-y-3.5 overflow-y-auto flex-1 hidden">
+      <!-- Snapshot Selector -->
+      <div>
+        <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400 block mb-1">
+          Explore Snapshot
+        </label>
+        <div class="relative">
+          <select id="explorer-source-select" class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer" onchange="loadExplorerSnapshot()">
+            <!-- Populated dynamically with Branches, Commits, Staging, Working Directory -->
+          </select>
+          <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Snapshot Meta Pill & Quick Action -->
+      <div class="flex items-center justify-between text-xs py-1 border-b border-dark-border/60">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-accent-cyan"></span>
+          <span id="explorer-file-count" class="font-mono text-[11px] text-slate-400">0 files</span>
+        </div>
+        <span id="explorer-source-pill" class="text-[10px] font-mono px-2 py-0.5 rounded bg-dark-surface border border-dark-border text-accent-cyan">
+          main
+        </span>
+      </div>
+
+      <!-- File List Container -->
+      <div id="explorer-file-list" class="space-y-2">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- TAB PANE 3: DIFF VIEWER                    -->
+    <!-- ────────────────────────────────────────── -->
+    <div id="tab-pane-diff" class="p-4 space-y-3.5 overflow-y-auto flex-1 hidden">
+      <!-- Quick Preset Buttons -->
+      <div>
+        <span class="text-[10px] font-semibold tracking-wider uppercase text-slate-400 block mb-1.5">
+          Quick Comparison Presets
+        </span>
+        <div class="grid grid-cols-2 gap-1.5 text-[11px] font-mono">
+          <button type="button" class="px-2 py-1.5 bg-dark-surface hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-dark-border text-left truncate transition" onclick="setDiffPreset('working-head')">
+            ⚡ Uncommitted
+          </button>
+          <button type="button" class="px-2 py-1.5 bg-dark-surface hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-dark-border text-left truncate transition" onclick="setDiffPreset('staged-head')">
+            📋 Staged vs HEAD
+          </button>
+          <button type="button" class="px-2 py-1.5 bg-dark-surface hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-dark-border text-left truncate transition" onclick="setDiffPreset('branch-head')">
+            🌿 Pre-Merge Diff
+          </button>
+          <button type="button" class="px-2 py-1.5 bg-dark-surface hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-dark-border text-left truncate transition" onclick="setDiffPreset('last-commit')">
+            ⏮ Last Commit
+          </button>
+        </div>
+      </div>
+
+      <!-- Custom From/To Pickers -->
+      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+        <div>
+          <label class="text-[10px] font-semibold uppercase text-slate-400 tracking-wider">From (Base / Source A)</label>
+          <div class="relative mt-1">
+            <select id="diff-source-a" class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border py-1.5 px-2.5 pr-7 outline-none appearance-none"></select>
+            <svg class="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          </div>
+        </div>
+        <div>
+          <label class="text-[10px] font-semibold uppercase text-slate-400 tracking-wider">To (Target / Source B)</label>
+          <div class="relative mt-1">
+            <select id="diff-source-b" class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border py-1.5 px-2.5 pr-7 outline-none appearance-none"></select>
+            <svg class="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          </div>
+        </div>
+        <button type="button" class="w-full py-2 bg-gradient-to-r from-accent-cyan to-brand-500 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-semibold text-xs rounded-lg shadow-sm hover:shadow-glow-cyan transition active:scale-[0.98] flex items-center justify-center gap-1.5" onclick="runDiffComparison()">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <span>Compare &amp; Generate Diff</span>
+        </button>
+      </div>
+
+      <!-- Diff Output Container in Panel -->
+      <div id="diff-output-container" class="space-y-3 pt-2">
+        <div class="text-center py-6 text-xs text-slate-500 font-mono">
+          Select sources or a preset above to view line-by-line diff.
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- INTERACTIVE TERMINAL FOOTER                -->
+<!-- ═══════════════════════════════════════════ -->
+<footer class="border-t border-dark-border bg-dark-base px-4 py-2.5 select-none">
+  <div class="max-w-[1920px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <!-- Terminal Output Feed -->
+    <div class="flex items-center gap-2.5 text-xs font-mono overflow-x-auto whitespace-nowrap flex-1 min-w-0">
+      <div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-dark-surface border border-dark-border shrink-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" id="statusDot"></span>
+        <span class="text-[11px] text-slate-400 uppercase tracking-wider" id="statusLabel">System Ready</span>
+      </div>
+      <span class="text-brand-400 font-semibold shrink-0">branchlite@vcs:~$</span>
+      <span class="text-accent-cyan truncate" id="terminal-stdout">Ready. Click Init to start or use operations above.</span>
+    </div>
+    <!-- Quick Shortcuts & Info -->
+    <div class="flex items-center gap-3 text-[11px] font-mono text-slate-500 shrink-0">
+      <span class="hidden md:inline">OOP Architecture: Git Object Model</span>
+      <span class="hidden md:inline">•</span>
+      <span class="inline-flex items-center gap-1">
+        <kbd class="px-1.5 py-0.5 text-[10px] bg-dark-surface border border-dark-border rounded text-slate-400">Ctrl</kbd>+<kbd class="px-1.5 py-0.5 text-[10px] bg-dark-surface border border-dark-border rounded text-slate-400">Enter</kbd> to Commit
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- REUSABLE FILE PREVIEW MODAL                -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="file-preview-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
+  <div class="bg-dark-panel border border-dark-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden anim-in">
+    <!-- Modal Header -->
+    <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-surface/80">
+      <div class="flex items-center gap-2.5 overflow-hidden">
+        <span class="w-2.5 h-2.5 rounded-full bg-accent-cyan"></span>
+        <span id="preview-modal-filename" class="font-mono text-sm font-semibold text-white truncate">filename.txt</span>
+        <span id="preview-modal-source" class="text-[10px] font-mono px-2 py-0.5 rounded bg-dark-surface border border-dark-border text-slate-300">Source</span>
+        <span id="preview-modal-hash" class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950/60 border border-indigo-800/40 text-brand-400">hash</span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <span id="preview-modal-lines" class="text-[11px] font-mono text-slate-400">0 lines</span>
+        <button id="btn-copy-preview" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-dark-surface hover:bg-slate-800 border border-dark-border text-slate-300 hover:text-white transition" onclick="copyPreviewContent()">Copy</button>
+        <button class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-surface transition" onclick="closePreviewModal()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Modal Code Viewport -->
+    <div class="flex-1 overflow-auto bg-dark-base p-4 font-mono text-xs leading-relaxed" id="preview-code-viewport">
+      <!-- Code lines rendered dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- EXPANDED DIFF VIEWER MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="diff-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
+  <div class="bg-dark-panel border border-dark-border rounded-xl shadow-2xl max-w-5xl w-full max-h-[88vh] flex flex-col overflow-hidden anim-in">
+    <!-- Modal Header -->
+    <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-surface/80">
+      <div class="flex items-center gap-2.5 overflow-hidden">
+        <span class="w-2.5 h-2.5 rounded-full bg-accent-violet"></span>
+        <h3 class="text-sm font-semibold text-white">Diff Inspector &amp; Change Analysis</h3>
+        <span id="modal-diff-summary" class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/60 border border-purple-800/40 text-accent-violet">0 files</span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <span id="modal-diff-labels" class="text-[11px] font-mono text-slate-400">A vs B</span>
+        <button class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-surface transition" onclick="closeDiffModal()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Modal Diff Viewport -->
+    <div class="flex-1 overflow-auto p-4 space-y-4" id="modal-diff-viewport">
+      <!-- Full-width visual diff rendered dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- INTERACTIVE EVENT HANDLERS & API WIRING    -->
+<!-- ═══════════════════════════════════════════ -->
+<script>
+  let currentRepoState = null;
+  let activeRightTab = 'staging';
+  let cachedPreviewContent = '';
+
+  // ─── TERMINAL LOG ────────────────────────────────────────
+  function logToTerminal(message, type = 'info') {
+    const term = document.getElementById('terminal-stdout');
+    if (!term) return;
+    term.textContent = message;
+    const colors = { success: 'text-emerald-400', warning: 'text-amber-400', error: 'text-rose-400', info: 'text-accent-cyan' };
+    term.className = (colors[type] || colors.info) + ' truncate transition-all duration-150';
+  }
+
+  // ─── TAB SWITCHER FOR RIGHT PANEL ─────────────────────────
+  function switchRightTab(tab) {
+    activeRightTab = tab;
+    const tabs = ['staging', 'explorer', 'diff'];
+    tabs.forEach(t => {
+      const btn = document.getElementById(`tab-btn-${t}`);
+      const pane = document.getElementById(`tab-pane-${t}`);
+      if (t === tab) {
+        btn.className = 'px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 bg-dark-surface text-accent-cyan shadow-sm border border-accent-cyan/30';
+        pane.classList.remove('hidden');
+      } else {
+        btn.className = 'px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
+        pane.classList.add('hidden');
+      }
+    });
+
+    if (tab === 'explorer') loadExplorerSnapshot();
+    if (tab === 'diff') populateDiffSelectors();
+  }
+
+  // ─── EXECUTE BRANCHLITE COMMAND ─────────────────────────
+  async function executeCmd(args) {
+    logToTerminal('$ branchlite ' + args.join(' '), 'info');
+    try {
+      const r = await fetch('/api/execute', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({args})
+      });
+      const d = await r.json();
+      if (d.stdout && d.stdout.trim()) {
+        logToTerminal(d.stdout.trim(), d.returncode === 0 ? 'success' : 'warning');
+      } else if (d.stderr && d.stderr.trim()) {
+        logToTerminal(d.stderr.trim(), 'error');
+      } else if (d.returncode === 0) {
+        if (args[0] === 'add') {
+          logToTerminal('✓ Staged ' + args.slice(1).join(', ') + ' to index (.branchlite/index)', 'success');
+        } else {
+          logToTerminal('✓ Completed: branchlite ' + args.join(' '), 'success');
+        }
+      }
+      renderState(d.status);
+    } catch (e) { logToTerminal('Error: ' + e.message, 'error'); }
+  }
+
+  // ─── FETCH & RENDER STATUS ──────────────────────────────
+  async function fetchStatus() {
+    try {
+      const r = await fetch('/api/status');
+      renderState(await r.json());
+    } catch(e) { console.error(e); }
+  }
+
+  // ─── RENDER FULL UI FROM STATUS ─────────────────────────
+  function renderState(s) {
+    if (!s) return;
+    currentRepoState = s;
+
+    // Branch indicator
+    document.getElementById('branchIndicator').textContent = s.currentBranch || '—';
+
+    // Branch selects
+    const bs = document.getElementById('select-checkout-branch');
+    const ms = document.getElementById('select-merge-branch');
+    bs.innerHTML = ''; ms.innerHTML = '';
+    (s.branches||[]).forEach(b => {
+      const o = document.createElement('option');
+      o.value = b.name;
+      o.textContent = b.name + (b.name === s.currentBranch ? ' (current)' : '');
+      bs.appendChild(o);
+      if (b.name !== s.currentBranch) {
+        const o2 = document.createElement('option');
+        o2.value = b.name;
+        o2.textContent = b.name;
+        ms.appendChild(o2);
+      }
+    });
+
+    // Staged files
+    const sl = document.getElementById('staged-files-list');
+    sl.innerHTML = '';
+    const stagedFiles = s.stagedFiles || [];
+    document.getElementById('stagedCountBadge').textContent = stagedFiles.length + ' staged';
+    stagedFiles.forEach(f => {
+      const d = document.createElement('div');
+      d.className = 'flex items-center justify-between p-2 rounded-lg bg-emerald-950/20 border border-emerald-900/40 text-xs font-mono group anim-in';
+      d.innerHTML = `
+        <div class="flex items-center gap-2 overflow-hidden cursor-pointer" onclick="previewFile({type:'staged'}, '${escAttr(f.file)}')">
+          <span class="text-emerald-400 font-bold text-sm">+</span>
+          <span class="text-slate-200 truncate hover:underline">${escHtml(f.file)}</span>
+          <span class="text-[10px] text-slate-500">${f.hash.substring(0,8)}</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button class="text-[10px] text-accent-cyan hover:text-white px-1.5 py-0.5 rounded hover:bg-dark-surface transition" title="Preview content" onclick="previewFile({type:'staged'}, '${escAttr(f.file)}')">preview</button>
+          <button class="text-[10px] text-slate-500 hover:text-rose-400 opacity-80 group-hover:opacity-100 transition px-1.5 py-0.5 rounded hover:bg-rose-950/40" title="Unstage this file" onclick="unstageFile('${escAttr(f.file)}')">unstage</button>
+        </div>`;
+      sl.appendChild(d);
+    });
+
+    // Working files
+    const wl = document.getElementById('workspace-files-list');
+    wl.innerHTML = '';
+    const workingFiles = s.workingFiles || [];
+    document.getElementById('workingCountLabel').textContent = workingFiles.length + ' detected';
+    workingFiles.forEach(f => {
+      const ext = f.split('.').pop().toLowerCase();
+      const dotColors = { cpp: 'bg-accent-cyan', h: 'bg-brand-400', txt: 'bg-accent-amber', py: 'bg-emerald-400' };
+      const dot = dotColors[ext] || 'bg-slate-500';
+      const d = document.createElement('div');
+      d.className = 'flex items-center justify-between p-2 rounded-lg bg-dark-surface border border-dark-border hover:border-slate-700 transition text-xs font-mono group anim-in';
+      d.innerHTML = `
+        <div class="flex items-center gap-2 overflow-hidden cursor-pointer" onclick="previewFile({type:'working'}, '${escAttr(f)}')">
+          <span class="w-2 h-2 rounded-full ${dot}" title="${ext}"></span>
+          <span class="text-slate-300 hover:underline">${escHtml(f)}</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button class="text-[10px] text-slate-400 hover:text-white px-1.5 py-0.5 rounded hover:bg-slate-800 transition" onclick="previewFile({type:'working'}, '${escAttr(f)}')">view</button>
+          <button class="px-2.5 py-1 bg-accent-cyan/15 hover:bg-accent-cyan text-accent-cyan hover:text-slate-950 font-semibold rounded-md text-[11px] transition duration-150 flex items-center gap-1 active:scale-95" onclick="quickStage('${escAttr(f)}')" type="button">
+            + Stage
+          </button>
+        </div>`;
+      wl.appendChild(d);
+    });
+
+    // Commits
+    const cl = document.getElementById('commitList');
+    const empty = document.getElementById('emptyCommitState');
+    const commits = s.commits || [];
+    document.getElementById('commitCountBadge').textContent = commits.length + ' commit' + (commits.length !== 1 ? 's' : '');
+
+    cl.querySelectorAll('.commit-node-wrapper').forEach(e => e.remove());
+
+    if (commits.length === 0) {
+      if (empty) empty.style.display = '';
+    } else {
+      if (empty) empty.style.display = 'none';
+
+      const nodeColors = ['accent-cyan', 'accent-violet', 'brand-400', 'accent-emerald', 'accent-amber'];
+
+      commits.forEach((c, i) => {
+        const isMerge = c.parent2 && c.parent2 !== '-' && c.parent2 !== '';
+        const isLast = i === commits.length - 1;
+        const isFirst = i === 0;
+        const color = nodeColors[i % nodeColors.length];
+
+        let branchTags = '';
+        if (isFirst) {
+          branchTags = `<span class="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            HEAD → ${escHtml(s.currentBranch || 'main')}
+          </span>`;
+        }
+        if (isMerge) {
+          branchTags += `<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">🔀 merge</span>`;
+        }
+
+        let parentInfo = '';
+        if (c.parent && c.parent !== '-') {
+          parentInfo = `<span class="text-[10px] font-mono text-slate-500">← ${c.parent.substring(0,7)}</span>`;
+        }
+        if (isMerge) {
+          parentInfo += ` <span class="text-[10px] font-mono text-purple-400">← ${c.parent2.substring(0,7)}</span>`;
+        }
+
+        const fileCount = (c.files || []).length;
+        const fileStr = fileCount > 0 ? `${fileCount} file${fileCount !== 1 ? 's' : ''}` : 'initial';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative flex items-start gap-3.5 group commit-node-wrapper anim-in';
+        wrapper.style.animationDelay = (i * 0.05) + 's';
+
+        const colorMap = {
+          'accent-cyan': { bg: 'bg-accent-cyan', ring: 'ring-cyan-500/20', glow: 'shadow-glow-cyan', grad: 'from-accent-cyan to-indigo-500', badge: 'bg-cyan-950/60 text-accent-cyan border-cyan-800/40', hover: 'group-hover:border-accent-cyan/40' },
+          'accent-violet': { bg: 'bg-accent-violet', ring: 'ring-purple-500/20', glow: 'shadow-glow-violet', grad: 'from-indigo-500 to-accent-violet', badge: 'bg-purple-950/60 text-accent-violet border-purple-800/40', hover: 'group-hover:border-accent-violet/40' },
+          'brand-400': { bg: 'bg-brand-400', ring: 'ring-indigo-500/20', glow: '', grad: 'from-brand-400 to-purple-500', badge: 'bg-indigo-950/60 text-brand-400 border-indigo-800/40', hover: 'group-hover:border-brand-400/40' },
+          'accent-emerald': { bg: 'bg-accent-emerald', ring: 'ring-emerald-500/20', glow: '', grad: 'from-accent-emerald to-cyan-600', badge: 'bg-emerald-950/60 text-accent-emerald border-emerald-800/40', hover: 'group-hover:border-accent-emerald/40' },
+          'accent-amber': { bg: 'bg-accent-amber', ring: 'ring-amber-500/20', glow: '', grad: 'from-accent-amber to-orange-600', badge: 'bg-amber-950/60 text-accent-amber border-amber-800/40', hover: 'group-hover:border-accent-amber/40' },
+        };
+        const cm = colorMap[color] || colorMap['accent-cyan'];
+
+        wrapper.innerHTML = `
+          <!-- Timeline Vertical Track & Node Dot -->
+          <div class="flex flex-col items-center self-stretch">
+            <div class="w-4 h-4 rounded-full ${cm.bg} ring-4 ${cm.ring} flex items-center justify-center ${cm.glow} z-10">
+              <div class="w-1.5 h-1.5 rounded-full bg-dark-panel"></div>
+            </div>
+            ${isLast ? '' : `<div class="w-0.5 flex-1 bg-gradient-to-b ${cm.grad} my-1"></div>`}
+          </div>
+          <!-- Commit Details Card -->
+          <div class="flex-1 bg-dark-surface/90 hover:bg-dark-surface border border-dark-border ${cm.hover} rounded-xl p-3.5 transition-all shadow-sm">
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-1.5 py-0.5 text-[11px] font-mono font-medium rounded ${cm.badge} border">
+                  ${c.id.substring(0,7)}
+                </span>
+                ${branchTags}
+              </div>
+              <span class="text-[11px] text-slate-500 font-mono shrink-0">${escHtml(c.time || '')}</span>
+            </div>
+            <p class="text-xs font-medium text-slate-200 leading-snug">
+              ${escHtml(c.message || 'no message')}
+            </p>
+            <div class="mt-2.5 flex items-center justify-between gap-2 text-[11px] text-slate-400 pt-2 border-t border-dark-border/40 flex-wrap">
+              <div class="flex items-center gap-2">
+                <span class="flex items-center gap-1">
+                  <span class="w-4 h-4 rounded-full bg-indigo-600/40 text-[9px] font-mono flex items-center justify-center text-indigo-300">BL</span>
+                  @branchlite
+                </span>
+                <span>•</span>
+                <span class="font-mono text-[10px] text-slate-400">${fileStr}</span>
+                ${parentInfo ? '<span>•</span>' + parentInfo : ''}
+              </div>
+              <!-- Quick Explorer & Diff Buttons on Card -->
+              <div class="flex items-center gap-1.5 ml-auto">
+                <button onclick="openCommitExplorer('${c.id}')" class="px-2 py-0.5 rounded text-[10px] font-mono bg-dark-base hover:bg-slate-800 text-slate-300 hover:text-white border border-dark-border transition active:scale-95 flex items-center gap-1" title="Explore files stored in this commit snapshot">
+                  <span>📂 Files</span>
+                </button>
+                <button onclick="openCommitDiff('${c.id}', '${c.parent && c.parent !== '-' ? c.parent : ''}')" class="px-2 py-0.5 rounded text-[10px] font-mono bg-dark-base hover:bg-slate-800 text-slate-300 hover:text-white border border-dark-border transition active:scale-95 flex items-center gap-1" title="Compare this commit with its parent">
+                  <span>± Diff</span>
+                </button>
+              </div>
+            </div>
+          </div>`;
+        cl.appendChild(wrapper);
       });
     }
 
-    function initRepo() { executeCmd(['init']); }
-    function addFile() {
-      const file = document.getElementById('addFileName').value.trim();
-      if (!file) return;
-      executeCmd(['add', file]);
-      document.getElementById('addFileName').value = '';
-    }
-    function quickStage(filename) {
-      executeCmd(['add', filename]);
-    }
-    function commitChanges() {
-      const msg = document.getElementById('commitMsg').value.trim();
-      if (!msg) return alert('Please enter a commit message');
-      executeCmd(['commit', '-m', msg]);
-      document.getElementById('commitMsg').value = '';
-    }
-    function createBranch() {
-      const name = document.getElementById('newBranchName').value.trim();
-      if (!name) return;
-      executeCmd(['branch', name]);
-      document.getElementById('newBranchName').value = '';
-    }
-    function checkoutBranch() {
-      const name = document.getElementById('branchSelect').value;
-      if (!name) return;
-      executeCmd(['checkout', name]);
-    }
-    function mergeBranch() {
-      const name = document.getElementById('mergeBranchSelect').value;
-      if (!name) return alert('No branch selected to merge');
-      executeCmd(['merge', name]);
-    }
-    function resetCommit() {
-      if (confirm('Undo the latest commit on the current branch? (Files will remain in working tree)')) {
-        executeCmd(['reset']);
-      }
+    // Refresh dynamic Snapshot & Diff select dropdowns if currently viewing them
+    populateExplorerSourceSelect();
+    populateDiffSelectors();
+  }
+
+  // ─── REUSABLE FILE EXPLORER LOGIC ────────────────────────
+  function populateExplorerSourceSelect(preferredVal = null) {
+    const sel = document.getElementById('explorer-source-select');
+    if (!sel || !currentRepoState) return;
+    const oldVal = preferredVal || sel.value;
+    sel.innerHTML = '';
+
+    // Branches group
+    const grpB = document.createElement('optgroup');
+    grpB.label = '🌿 Branches';
+    (currentRepoState.branches || []).forEach(b => {
+      const o = document.createElement('option');
+      o.value = `branch:${b.name}`;
+      o.textContent = `branch: ${b.name} (${b.name === currentRepoState.currentBranch ? 'current' : b.tip.substring(0,7) || 'empty'})`;
+      grpB.appendChild(o);
+    });
+    sel.appendChild(grpB);
+
+    // Commits group
+    const grpC = document.createElement('optgroup');
+    grpC.label = '💾 Commits';
+    (currentRepoState.commits || []).forEach(c => {
+      const o = document.createElement('option');
+      o.value = `commit:${c.id}`;
+      o.textContent = `${c.id.substring(0,7)}: ${c.message.substring(0,25)}`;
+      grpC.appendChild(o);
+    });
+    sel.appendChild(grpC);
+
+    // Working & Staging group
+    const grpW = document.createElement('optgroup');
+    grpW.label = '📂 Local';
+    const oWork = document.createElement('option');
+    oWork.value = 'working:';
+    oWork.textContent = 'Working Directory (files on disk)';
+    grpW.appendChild(oWork);
+
+    const oStage = document.createElement('option');
+    oStage.value = 'staged:';
+    oStage.textContent = `Staging Area (.branchlite/index) - ${(currentRepoState.stagedFiles||[]).length} staged`;
+    grpW.appendChild(oStage);
+    sel.appendChild(grpW);
+
+    if (oldVal) sel.value = oldVal;
+  }
+
+  async function loadExplorerSnapshot(specifiedSource = null) {
+    const sel = document.getElementById('explorer-source-select');
+    let source = specifiedSource;
+
+    if (!source && sel && sel.value) {
+      const [type, id] = sel.value.split(':');
+      source = { type, id: id || '' };
+    } else if (!source) {
+      source = { type: 'branch', id: currentRepoState?.currentBranch || 'main' };
     }
 
-    // Initial load
-    fetchStatus();
-  </script>
-</body>
-</html>
+    try {
+      const r = await fetch('/api/snapshot', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(source)
+      });
+      const data = await r.json();
+      renderExplorerFiles(data, source);
+    } catch (e) {
+      logToTerminal('Snapshot error: ' + e.message, 'error');
+    }
+  }
+
+  function renderExplorerFiles(data, source) {
+    const list = document.getElementById('explorer-file-list');
+    const countEl = document.getElementById('explorer-file-count');
+    const pillEl = document.getElementById('explorer-source-pill');
+
+    if (!list) return;
+    list.innerHTML = '';
+
+    pillEl.textContent = data.label || 'Snapshot';
+    const files = data.files || [];
+    countEl.textContent = `${files.length} file${files.length !== 1 ? 's' : ''}`;
+
+    if (files.length === 0) {
+      list.innerHTML = `<div class="text-center py-6 text-xs text-slate-500 font-mono">No files saved in this snapshot.</div>`;
+      return;
+    }
+
+    files.forEach(f => {
+      const ext = f.file.split('.').pop().toLowerCase();
+      const dotColors = { cpp: 'bg-accent-cyan', h: 'bg-brand-400', txt: 'bg-accent-amber', py: 'bg-emerald-400' };
+      const dot = dotColors[ext] || 'bg-slate-500';
+
+      const row = document.createElement('div');
+      row.className = 'flex items-center justify-between p-2 rounded-lg bg-dark-surface border border-dark-border hover:border-accent-cyan/40 transition text-xs font-mono group anim-in';
+      row.innerHTML = `
+        <div class="flex items-center gap-2 overflow-hidden cursor-pointer" onclick="previewFile(${JSON.stringify(source).replace(/"/g, '&quot;')}, '${escAttr(f.file)}')">
+          <span class="w-2 h-2 rounded-full ${dot}"></span>
+          <span class="text-slate-200 hover:text-accent-cyan truncate font-medium">${escHtml(f.file)}</span>
+          <span class="text-[10px] text-slate-500 font-mono">${f.hash && f.hash !== 'working' ? f.hash.substring(0,8) : ''}</span>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span class="text-[10px] text-slate-500">${f.size || 0}B</span>
+          <button class="px-2 py-0.5 rounded text-[11px] bg-dark-base hover:bg-slate-800 text-accent-cyan border border-dark-border transition" onclick="previewFile(${JSON.stringify(source).replace(/"/g, '&quot;')}, '${escAttr(f.file)}')">
+            Preview
+          </button>
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+
+  function openCommitExplorer(commitId) {
+    switchRightTab('explorer');
+    populateExplorerSourceSelect(`commit:${commitId}`);
+    loadExplorerSnapshot({ type: 'commit', id: commitId });
+  }
+
+  // ─── REUSABLE FILE PREVIEW MODAL ─────────────────────────
+  async function previewFile(source, filename) {
+    logToTerminal(`Loading preview for ${filename}...`, 'info');
+    try {
+      const payload = { ...source, file: filename };
+      const r = await fetch('/api/file_content', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const d = await r.json();
+      if (!d.success) return logToTerminal('Preview failed: ' + d.message, 'error');
+
+      cachedPreviewContent = d.content;
+
+      document.getElementById('preview-modal-filename').textContent = d.filename;
+      document.getElementById('preview-modal-source').textContent = source.type === 'commit' ? `commit:${source.id.substring(0,7)}` : (source.id ? `${source.type}:${source.id}` : source.type);
+      document.getElementById('preview-modal-hash').textContent = d.hash ? d.hash.substring(0,8) : 'working';
+      document.getElementById('preview-modal-lines').textContent = `${d.lines} lines (${d.size}B)`;
+
+      const viewport = document.getElementById('preview-code-viewport');
+      viewport.innerHTML = '';
+
+      const lines = (d.content || '').split('\n');
+      lines.forEach((line, idx) => {
+        const lineRow = document.createElement('div');
+        lineRow.className = 'flex items-start hover:bg-white/[0.03] px-1 py-0.5';
+        lineRow.innerHTML = `
+          <span class="gutter-num">${idx + 1}</span>
+          <pre class="flex-1 overflow-x-auto text-slate-200 whitespace-pre">${escHtml(line)}</pre>`;
+        viewport.appendChild(lineRow);
+      });
+
+      document.getElementById('file-preview-modal').classList.remove('hidden');
+      logToTerminal(`✓ Loaded ${filename} (${d.lines} lines)`, 'success');
+    } catch (e) {
+      logToTerminal('Preview error: ' + e.message, 'error');
+    }
+  }
+
+  function closePreviewModal() {
+    document.getElementById('file-preview-modal').classList.add('hidden');
+  }
+
+  function copyPreviewContent() {
+    if (!cachedPreviewContent) return;
+    navigator.clipboard.writeText(cachedPreviewContent).then(() => {
+      const btn = document.getElementById('btn-copy-preview');
+      btn.textContent = 'Copied!';
+      btn.className = 'px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-950/60 border border-emerald-800/40 text-emerald-300 transition';
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.className = 'px-2.5 py-1 text-xs font-medium rounded-lg bg-dark-surface hover:bg-slate-800 border border-dark-border text-slate-300 hover:text-white transition';
+      }, 1500);
+    });
+  }
+
+  // ─── REUSABLE DIFF VIEWER LOGIC ─────────────────────────
+  function populateDiffSelectors() {
+    const selA = document.getElementById('diff-source-a');
+    const selB = document.getElementById('diff-source-b');
+    if (!selA || !selB || !currentRepoState) return;
+
+    const oldA = selA.value;
+    const oldB = selB.value;
+    selA.innerHTML = ''; selB.innerHTML = '';
+
+    const buildOptions = (sel) => {
+      const gB = document.createElement('optgroup'); gB.label = '🌿 Branches';
+      (currentRepoState.branches || []).forEach(b => {
+        const o = document.createElement('option');
+        o.value = `branch:${b.name}`;
+        o.textContent = `Branch: ${b.name}`;
+        gB.appendChild(o);
+      });
+      sel.appendChild(gB);
+
+      const gC = document.createElement('optgroup'); gC.label = '💾 Commits';
+      (currentRepoState.commits || []).forEach(c => {
+        const o = document.createElement('option');
+        o.value = `commit:${c.id}`;
+        o.textContent = `Commit: ${c.id.substring(0,7)} (${c.message.substring(0,18)})`;
+        gC.appendChild(o);
+      });
+      sel.appendChild(gC);
+
+      const gL = document.createElement('optgroup'); gL.label = '📂 Local';
+      const oW = document.createElement('option'); oW.value = 'working:'; oW.textContent = 'Working Directory';
+      const oS = document.createElement('option'); oS.value = 'staged:'; oS.textContent = 'Staged Index';
+      gL.appendChild(oW); gL.appendChild(oS);
+      sel.appendChild(gL);
+    };
+
+    buildOptions(selA);
+    buildOptions(selB);
+
+    if (oldA) selA.value = oldA;
+    else selA.value = `branch:${currentRepoState.currentBranch || 'main'}`;
+
+    if (oldB) selB.value = oldB;
+    else selB.value = 'working:';
+  }
+
+  function setDiffPreset(preset) {
+    populateDiffSelectors();
+    const selA = document.getElementById('diff-source-a');
+    const selB = document.getElementById('diff-source-b');
+
+    if (preset === 'working-head') {
+      selA.value = `branch:${currentRepoState?.currentBranch || 'main'}`;
+      selB.value = 'working:';
+    } else if (preset === 'staged-head') {
+      selA.value = `branch:${currentRepoState?.currentBranch || 'main'}`;
+      selB.value = 'staged:';
+    } else if (preset === 'branch-head') {
+      const target = document.getElementById('select-merge-branch')?.value;
+      if (target) {
+        selA.value = `branch:${currentRepoState?.currentBranch || 'main'}`;
+        selB.value = `branch:${target}`;
+      } else {
+        logToTerminal('No merge branch selected in Git Operations', 'warning');
+      }
+    } else if (preset === 'last-commit') {
+      const commits = currentRepoState?.commits || [];
+      if (commits.length > 0) {
+        const latest = commits[0];
+        if (latest.parent && latest.parent !== '-') {
+          selA.value = `commit:${latest.parent}`;
+          selB.value = `commit:${latest.id}`;
+        } else {
+          selA.value = `commit:${latest.id}`;
+          selB.value = 'working:';
+        }
+      }
+    }
+    runDiffComparison();
+  }
+
+  async function runDiffComparison(customA = null, customB = null, targetFile = null) {
+    const selA = document.getElementById('diff-source-a');
+    const selB = document.getElementById('diff-source-b');
+
+    let sourceA = customA;
+    let sourceB = customB;
+
+    if (!sourceA && selA) {
+      const [type, id] = selA.value.split(':');
+      sourceA = { type, id: id || '' };
+    }
+    if (!sourceB && selB) {
+      const [type, id] = selB.value.split(':');
+      sourceB = { type, id: id || '' };
+    }
+
+    logToTerminal('Generating diff...', 'info');
+    try {
+      const r = await fetch('/api/diff', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ sourceA, sourceB, file: targetFile })
+      });
+      const data = await r.json();
+      renderDiffOutput(data);
+    } catch (e) {
+      logToTerminal('Diff error: ' + e.message, 'error');
+    }
+  }
+
+  function renderDiffOutput(data) {
+    const container = document.getElementById('diff-output-container');
+    const modalContainer = document.getElementById('modal-diff-viewport');
+
+    const html = generateDiffHTML(data);
+    if (container) container.innerHTML = html;
+    if (modalContainer) modalContainer.innerHTML = html;
+
+    // Update modal labels
+    const modLbl = document.getElementById('modal-diff-labels');
+    const modSum = document.getElementById('modal-diff-summary');
+    if (modLbl) modLbl.textContent = `${data.sourceA_label} ➔ ${data.sourceB_label}`;
+    if (modSum) modSum.textContent = `${(data.files || []).length} file${(data.files||[]).length !== 1 ? 's' : ''}`;
+
+    logToTerminal(`✓ Diff ready: ${(data.files || []).length} file(s) changed`, 'success');
+  }
+
+  function generateDiffHTML(data) {
+    const files = data.files || [];
+    if (files.length === 0) {
+      return `<div class="p-4 rounded-xl bg-dark-surface border border-dark-border text-center">
+        <p class="text-xs font-mono text-emerald-400 font-semibold mb-1">✓ No Differences Found</p>
+        <p class="text-[11px] text-slate-500 font-mono">${escHtml(data.sourceA_label)} and ${escHtml(data.sourceB_label)} are identical.</p>
+      </div>`;
+    }
+
+    let out = `<div class="text-[11px] font-mono text-slate-400 pb-1 flex items-center justify-between">
+      <span>${escHtml(data.sourceA_label)} ➔ ${escHtml(data.sourceB_label)}</span>
+      <span class="text-accent-cyan">${files.length} changed file${files.length !== 1 ? 's' : ''}</span>
+    </div>`;
+
+    files.forEach(f => {
+      const statusBadge = f.status === 'added' ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">NEW</span>' :
+                          f.status === 'deleted' ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-rose-950/60 text-rose-400 border border-rose-800/40">DELETED</span>' :
+                          '<span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-950/60 text-amber-400 border border-amber-800/40">MODIFIED</span>';
+
+      out += `
+        <div class="border border-dark-border rounded-xl overflow-hidden bg-dark-surface shadow-sm">
+          <!-- File Diff Header -->
+          <div class="px-3 py-2 bg-dark-panel/90 border-b border-dark-border flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-2 overflow-hidden">
+              ${statusBadge}
+              <span class="font-semibold text-slate-200 truncate">${escHtml(f.filename)}</span>
+            </div>
+            <div class="flex items-center gap-2 text-[10px] shrink-0 font-mono">
+              <span class="text-emerald-400 font-bold">+${f.stats.added}</span>
+              <span class="text-rose-400 font-bold">-${f.stats.deleted}</span>
+            </div>
+          </div>
+          <!-- Line Chunks -->
+          <div class="p-2 font-mono text-xs overflow-x-auto bg-dark-base max-h-72 overflow-y-auto">`;
+
+      (f.chunks || []).forEach(chk => {
+        const rowCls = chk.type === 'add' ? 'diff-row-add' : chk.type === 'del' ? 'diff-row-del' : 'diff-row-same';
+        const sign = chk.type === 'add' ? '+' : chk.type === 'del' ? '-' : ' ';
+        out += `
+          <div class="flex items-start py-0.5 px-1.5 ${rowCls}">
+            <span class="gutter-num">${chk.oldNum || ''}</span>
+            <span class="gutter-num">${chk.newNum || ''}</span>
+            <span class="w-4 text-center font-bold select-none shrink-0">${sign}</span>
+            <pre class="flex-1 whitespace-pre overflow-x-auto">${escHtml(chk.line)}</pre>
+          </div>`;
+      });
+
+      out += `</div></div>`;
+    });
+
+    return out;
+  }
+
+  // ─── MODAL CONTROLS & SHORTCUTS ─────────────────────────
+  function openExpandedModal() {
+    document.getElementById('diff-modal').classList.remove('hidden');
+    runDiffComparison();
+  }
+  function closeDiffModal() {
+    document.getElementById('diff-modal').classList.add('hidden');
+  }
+
+  function previewMergeDiff() {
+    const targetBranch = document.getElementById('select-merge-branch')?.value;
+    if (!targetBranch) return logToTerminal('Select a target branch to merge first', 'warning');
+
+    switchRightTab('diff');
+    populateDiffSelectors();
+    const selA = document.getElementById('diff-source-a');
+    const selB = document.getElementById('diff-source-b');
+    selA.value = `branch:${currentRepoState?.currentBranch || 'main'}`;
+    selB.value = `branch:${targetBranch}`;
+    runDiffComparison();
+    logToTerminal(`Previewing merge diff: ${currentRepoState?.currentBranch || 'main'} ➔ ${targetBranch}`, 'info');
+  }
+
+  function previewStagedDiff() {
+    switchRightTab('diff');
+    setDiffPreset('staged-head');
+  }
+
+  function openCommitDiff(commitId, parentId) {
+    switchRightTab('diff');
+    populateDiffSelectors();
+    const selA = document.getElementById('diff-source-a');
+    const selB = document.getElementById('diff-source-b');
+    if (parentId && parentId !== '-') {
+      selA.value = `commit:${parentId}`;
+      selB.value = `commit:${commitId}`;
+    } else {
+      selA.value = `commit:${commitId}`;
+      selB.value = 'working:';
+    }
+    runDiffComparison();
+  }
+
+  // ─── HELPERS ────────────────────────────────────────────
+  function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function escAttr(s) { return String(s).replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+  // ─── FILE UPLOAD ────────────────────────────────────────
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileUploadInput');
+
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drop-active'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drop-active'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('drop-active');
+    if (e.dataTransfer.files.length > 0) uploadFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) uploadFile(e.target.files[0]);
+    e.target.value = '';
+  });
+
+  async function uploadFile(file) {
+    logToTerminal('Uploading ' + file.name + '...', 'info');
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const b64 = e.target.result.split(',')[1];
+      try {
+        const r = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({filename: file.name, content_b64: b64})
+        });
+        const d = await r.json();
+        logToTerminal(d.success ? '✓ ' + d.filename + ' uploaded — click + Stage to add it' : '✗ ' + d.message, d.success ? 'success' : 'error');
+        renderState(d.status);
+      } catch (e) { logToTerminal('Upload failed: ' + e.message, 'error'); }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ─── UNSTAGE FILE ───────────────────────────────────────
+  async function unstageFile(filename) {
+    logToTerminal('Unstaging ' + filename + '...', 'info');
+    try {
+      const r = await fetch('/api/unstage', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({filename})
+      });
+      const d = await r.json();
+      logToTerminal(d.message, 'warning');
+      renderState(d.status);
+    } catch (e) { logToTerminal('Unstage error: ' + e.message, 'error'); }
+  }
+
+  // ─── WIPE REPOSITORY ───────────────────────────────────
+  async function wipeRepository() {
+    if (!confirm('Delete all commits, branches, and test files to start completely fresh?')) return;
+    logToTerminal('Wiping repository...', 'warning');
+    try {
+      const r = await fetch('/api/wipe_all', {method:'POST'});
+      const d = await r.json();
+      logToTerminal(d.message, 'success');
+      renderState(d.status);
+    } catch (e) { logToTerminal('Wipe error: ' + e.message, 'error'); }
+  }
+
+  // ─── BUTTON EVENT HANDLERS ─────────────────────────────
+  document.getElementById('btn-init-repo').addEventListener('click', () => executeCmd(['init']));
+
+  document.getElementById('btn-stage-manual').addEventListener('click', () => {
+    const f = document.getElementById('input-stage-file').value.trim();
+    if (f) { executeCmd(['add', f]); document.getElementById('input-stage-file').value = ''; }
+    else logToTerminal('Enter a filename to stage', 'warning');
+  });
+
+  document.getElementById('btn-commit-action').addEventListener('click', () => {
+    const m = document.getElementById('input-commit-msg').value.trim();
+    if (!m) return logToTerminal('Enter a commit message first', 'warning');
+    executeCmd(['commit', '-m', m]);
+    document.getElementById('input-commit-msg').value = '';
+  });
+
+  document.getElementById('btn-create-branch').addEventListener('click', () => {
+    const n = document.getElementById('input-branch-name').value.trim();
+    if (n) { executeCmd(['branch', n]); document.getElementById('input-branch-name').value = ''; }
+    else logToTerminal('Enter a branch name', 'warning');
+  });
+
+  document.getElementById('btn-checkout-branch').addEventListener('click', () => {
+    const n = document.getElementById('select-checkout-branch').value;
+    if (n) executeCmd(['checkout', n]);
+  });
+
+  document.getElementById('btn-merge-action').addEventListener('click', () => {
+    const n = document.getElementById('select-merge-branch').value;
+    if (!n) return logToTerminal('Select a branch to merge', 'warning');
+    executeCmd(['merge', n]);
+  });
+
+  document.getElementById('btn-reset-commit').addEventListener('click', () => {
+    if (confirm('Undo the latest commit? Files will be kept.')) executeCmd(['reset']);
+  });
+
+  document.getElementById('btn-reset-vcs').addEventListener('click', () => wipeRepository());
+
+  document.getElementById('btn-refresh-graph').addEventListener('click', () => fetchStatus());
+
+  function quickStage(f) { executeCmd(['add', f]); }
+
+  // ─── KEYBOARD SHORTCUTS ────────────────────────────────
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('btn-commit-action').click();
+    }
+    if (e.key === 'Escape') {
+      closePreviewModal();
+      closeDiffModal();
+    }
+  });
+
+  // ─── INITIAL LOAD ──────────────────────────────────────
+  fetchStatus();
+</script>
+</body></html>

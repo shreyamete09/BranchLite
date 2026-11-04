@@ -80,17 +80,35 @@ void Repository::init() {
     FileUtils::writeFile(getIndexPath(), "");
 }
 
-// Verifies that the current directory is inside an initialized repository
+// Verifies that the current directory is inside an initialized repository and self-heals critical files
 void Repository::requireInit() const {
     if (!std::filesystem::exists(getBranchLiteDir()) || !std::filesystem::is_directory(getBranchLiteDir())) {
         throw VcsExceptions::RepositoryNotInitializedException();
+    }
+    // Self-healing: ensure essential internal structure exists if partially missing
+    if (!std::filesystem::exists(getHeadPath())) {
+        FileUtils::writeFile(getHeadPath(), "main");
+    }
+    if (!std::filesystem::exists(getBranchesDir())) {
+        std::filesystem::create_directories(getBranchesDir());
+    }
+    if (!std::filesystem::exists(getBranchesDir() / "main")) {
+        FileUtils::writeFile(getBranchesDir() / "main", "");
+    }
+    if (!std::filesystem::exists(getIndexPath())) {
+        FileUtils::writeFile(getIndexPath(), "");
     }
 }
 
 // Returns the name of the currently checked out branch from HEAD
 std::string Repository::currentBranch() const {
     requireInit();
-    return FileUtils::trim(FileUtils::readFile(getHeadPath()));
+    if (!std::filesystem::exists(getHeadPath())) {
+        FileUtils::writeFile(getHeadPath(), "main");
+        return "main";
+    }
+    std::string branch = FileUtils::trim(FileUtils::readFile(getHeadPath()));
+    return branch.empty() ? "main" : branch;
 }
 
 // Sets the currently checked out branch name in HEAD
