@@ -1,167 +1,171 @@
 <!DOCTYPE html>
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>BranchLite VCS - Developer Studio</title>
-<!-- Tailwind CSS CDN with forms and container queries plugins -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Google Fonts for Inter & JetBrains Mono -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<script>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>BranchLite VCS - Developer Studio</title>
+  <!-- Tailwind CSS CDN with forms and container queries plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
           colors: {
             brand: {
               50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
               400: '#818cf8',
               500: '#6366f1',
               600: '#4f46e5',
-            },
-            dark: {
-              base: '#080a0f',
-              panel: '#0d1117',
-              surface: '#131822',
-              input: '#0b0f17',
-              border: '#1f2937',
-              borderLight: '#30363d',
-            },
-            accent: {
-              cyan: '#38bdf8',
-              violet: '#a855f7',
-              emerald: '#10b981',
-              rose: '#f43f5e',
-              amber: '#f59e0b'
+              700: '#4338ca',
             }
           },
           boxShadow: {
-            'glow-cyan': '0 0 15px -3px rgba(56, 189, 248, 0.25)',
-            'glow-violet': '0 0 15px -3px rgba(168, 85, 247, 0.3)',
-            'inner-subtle': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+            'subtle': '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',
+            'card': '0 2px 6px -1px rgba(0, 0, 0, 0.06), 0 1px 4px -1px rgba(0, 0, 0, 0.04)',
+            'card-hover': '0 10px 25px -5px rgba(99, 102, 241, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
+            'glow-indigo': '0 0 20px -3px rgba(99, 102, 241, 0.25)',
           }
         }
       }
     }
   </script>
-<!-- Custom Scrollbar and Canvas Grid Styles -->
-<style data-purpose="custom-scrollbars">
+
+  <style>
+    /* Custom Scrollbars */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #0d1117;
+      background: #f1f5f9;
     }
     ::-webkit-scrollbar-thumb {
-      background: #252d3d;
+      background: #cbd5e1;
       border-radius: 9999px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #3b465c;
+      background: #94a3b8;
     }
-  </style>
-<style data-purpose="graph-grid-pattern">
+
+    /* Subtle Dot Grid Background */
     .dot-pattern {
-      background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-      background-size: 20px 20px;
+      background-image: radial-gradient(rgba(100, 116, 139, 0.12) 1.2px, transparent 1.2px);
+      background-size: 18px 18px;
     }
+
     @keyframes pulse-subtle {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.9); }
     }
     .status-pulse {
       animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
     @keyframes fadeSlideIn {
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     .anim-in { animation: fadeSlideIn 0.22s ease forwards; }
+
     .drop-active {
-      border-color: #38bdf8 !important;
-      background: rgba(56, 189, 248, 0.08) !important;
+      border-color: #6366f1 !important;
+      background: #eef2ff !important;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
     }
-    /* Diff lines */
+
+    /* Diff View Styling */
     .diff-row-add {
-      background: rgba(16, 185, 129, 0.12);
-      color: #6ee7b7;
-      border-left: 2px solid #10b981;
+      background: #ecfdf5;
+      color: #065f46;
+      border-left: 3px solid #10b981;
     }
     .diff-row-del {
-      background: rgba(244, 63, 94, 0.12);
-      color: #fda4af;
-      border-left: 2px solid #f43f5e;
+      background: #fff1f2;
+      color: #9f1239;
+      border-left: 3px solid #f43f5e;
     }
     .diff-row-same {
-      color: #94a3b8;
-      border-left: 2px solid transparent;
+      background: #ffffff;
+      color: #475569;
+      border-left: 3px solid transparent;
     }
     .gutter-num {
       user-select: none;
       min-width: 2.2rem;
       text-align: right;
-      padding-right: 0.5rem;
-      color: #475569;
+      padding-right: 0.6rem;
+      color: #94a3b8;
+      background: rgba(248, 250, 252, 0.8);
+      font-size: 11px;
     }
   </style>
 </head>
-<body class="bg-dark-base text-slate-200 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500/30 selection:text-brand-400 overflow-x-hidden">
+
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
 
 <!-- ═══════════════════════════════════════════ -->
 <!-- TOP NAVIGATION BAR                         -->
 <!-- ═══════════════════════════════════════════ -->
-<header class="h-14 border-b border-dark-border bg-dark-panel/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40">
+<header class="h-16 border-b border-slate-200/90 bg-white/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 shadow-sm">
   <!-- Brand & Project Meta -->
   <div class="flex items-center gap-3.5">
-    <!-- Git Branch Icon Emblem -->
-    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-accent-violet flex items-center justify-center shadow-glow-violet ring-1 ring-white/20">
-      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+    <!-- Emblem -->
+    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-blue-500 flex items-center justify-center shadow-md shadow-indigo-500/20 ring-2 ring-indigo-100">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
         <circle cx="6" cy="6" fill="currentColor" r="2.5"></circle>
         <circle cx="18" cy="18" fill="currentColor" r="2.5"></circle>
         <path d="M6 8.5v7a2.5 2.5 0 002.5 2.5H15.5"></path>
       </svg>
     </div>
-    <div class="flex items-center gap-2.5">
-      <span class="font-bold text-base tracking-tight text-white flex items-center">
-        BranchLite <span class="text-accent-cyan ml-1 font-semibold">VCS</span>
-      </span>
-      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium tracking-wide bg-accent-violet/15 text-accent-violet border border-accent-violet/30 shadow-sm">
-        OOP Project
-      </span>
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="font-extrabold text-base tracking-tight text-slate-900 flex items-center">
+          BranchLite <span class="text-indigo-600 ml-1.5 font-bold">Studio</span>
+        </span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs">
+          C++17 OOP
+        </span>
+      </div>
+      <p class="text-[11px] text-slate-500 -mt-0.5 font-medium hidden sm:block">Git-compatible Object Engine &amp; DAG Visualizer</p>
     </div>
   </div>
 
   <!-- Global Operations & Status -->
-  <div class="flex items-center gap-3">
+  <div class="flex items-center gap-2.5 sm:gap-3">
     <!-- Quick Explorer & Diff Pills -->
-    <button class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-accent-cyan bg-cyan-950/30 hover:bg-cyan-950/60 border border-cyan-800/40 transition active:scale-95" type="button" onclick="switchRightTab('explorer')">
-      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+    <button class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition active:scale-95 shadow-subtle" type="button" onclick="switchRightTab('explorer')">
+      <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
       <span>File Explorer</span>
     </button>
-    <button class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-accent-violet bg-purple-950/30 hover:bg-purple-950/60 border border-purple-800/40 transition active:scale-95" type="button" onclick="switchRightTab('diff')">
-      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+    <button class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition active:scale-95 shadow-subtle" type="button" onclick="switchRightTab('diff')">
+      <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
       <span>Diff Viewer</span>
     </button>
 
     <!-- Reset VCS State Button -->
-    <button class="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-rose-300 hover:text-rose-100 bg-rose-950/20 hover:bg-rose-950/40 border border-rose-900/40 hover:border-rose-700/60 transition-all duration-200 shadow-sm active:scale-95" id="btn-reset-vcs" type="button">
-      <svg class="w-3.5 h-3.5 text-rose-400 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button class="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200 transition-all duration-200 shadow-2xs active:scale-95" id="btn-reset-vcs" type="button">
+      <svg class="w-3.5 h-3.5 text-rose-500 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
       </svg>
-      <span>Delete All &amp; Reset Fresh</span>
+      <span class="font-medium">Reset Fresh</span>
     </button>
+
     <!-- Active Branch Dropdown Pill -->
-    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-200 bg-dark-surface border border-dark-borderLight shadow-inner-subtle">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 status-pulse shadow-[0_0_8px_#34d399]"></span>
-      <span class="text-slate-400 text-[11px]">branch:</span>
-      <span class="text-accent-cyan font-semibold" id="branchIndicator">main</span>
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-800 bg-emerald-50/80 border border-emerald-200/90 shadow-2xs">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse shadow-[0_0_8px_#10b981]"></span>
+      <span class="text-slate-500 text-[11px] font-sans">branch:</span>
+      <span class="text-emerald-700 font-bold" id="branchIndicator">main</span>
     </div>
   </div>
 </header>
@@ -169,102 +173,108 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- MAIN THREE-COLUMN LAYOUT                   -->
 <!-- ═══════════════════════════════════════════ -->
-<main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3.5 p-3.5 sm:p-4 overflow-hidden max-w-[1920px] w-full mx-auto">
+<main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 sm:p-5 overflow-hidden max-w-[1920px] w-full mx-auto">
 
   <!-- ========================================== -->
   <!-- COLUMN 1: Git Operations (Left Panel)      -->
   <!-- ========================================== -->
-  <section class="lg:col-span-3 flex flex-col bg-dark-panel border border-dark-border rounded-xl shadow-xl overflow-hidden">
+  <section class="lg:col-span-3 flex flex-col bg-white border border-slate-200/90 rounded-2xl shadow-card overflow-hidden">
     <!-- Section Header -->
-    <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-surface/40">
+    <div class="p-3.5 px-4 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/70">
       <div class="flex items-center gap-2">
-        <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-        </svg>
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-200">Git Operations</h2>
+        <div class="w-6 h-6 rounded-md bg-indigo-50 border border-indigo-200/60 flex items-center justify-center text-indigo-600">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700">Git Operations</h2>
       </div>
-      <button class="inline-flex items-center px-2 py-0.5 text-[11px] font-mono font-medium rounded-md bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30 hover:bg-accent-cyan/25 transition-colors" id="btn-init-repo" title="Initialize BranchLite repository">
-        Init
+      <button class="inline-flex items-center px-2.5 py-1 text-[11px] font-mono font-semibold rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100 transition-colors shadow-2xs" id="btn-init-repo" title="Initialize BranchLite repository">
+        Init Repo
       </button>
     </div>
 
     <!-- Action Forms Container -->
-    <div class="p-4 space-y-5 overflow-y-auto flex-1">
+    <div class="p-4 space-y-4 overflow-y-auto flex-1">
       <!-- OP 1: STAGE FILE (ADD) -->
-      <div class="space-y-2">
+      <div class="space-y-1.5 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
         <div class="flex items-center justify-between">
-          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400" for="input-stage-file">
+          <label class="text-[11px] font-bold tracking-wider uppercase text-slate-700 flex items-center gap-1.5" for="input-stage-file">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
             Stage File (ADD)
           </label>
-          <span class="text-[10px] font-mono text-slate-500">git add &lt;file&gt; or .</span>
+          <span class="text-[10px] font-mono text-slate-400">git add &lt;file&gt;</span>
         </div>
         <div class="flex gap-2">
           <div class="relative flex-1">
-            <input class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2 px-3 placeholder-slate-600 outline-none transition" id="input-stage-file" placeholder="e.g. main.cpp or ." type="text"/>
+            <input class="w-full bg-white text-slate-800 text-xs font-mono rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 py-2 px-3 placeholder-slate-400 outline-none transition shadow-2xs" id="input-stage-file" placeholder="e.g. main.cpp or ." type="text"/>
           </div>
-          <button class="px-3.5 py-2 bg-gradient-to-r from-accent-cyan to-brand-500 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-semibold text-xs rounded-lg shadow-sm hover:shadow-glow-cyan transition-all active:scale-95 flex items-center gap-1" id="btn-stage-manual" type="button">
+          <button class="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-xs rounded-lg shadow-sm hover:shadow-indigo-200 hover:shadow-md transition-all active:scale-95 flex items-center gap-1 shrink-0" id="btn-stage-manual" type="button">
             Stage
           </button>
         </div>
       </div>
 
       <!-- OP 2: COMMIT STAGED CHANGES -->
-      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+      <div class="space-y-2 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
         <div class="flex items-center justify-between">
-          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400" for="input-commit-msg">
+          <label class="text-[11px] font-bold tracking-wider uppercase text-slate-700 flex items-center gap-1.5" for="input-commit-msg">
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
             Commit Staged Changes
           </label>
-          <button type="button" class="text-[10px] text-accent-cyan hover:underline font-mono" onclick="previewStagedDiff()">± View Diff</button>
+          <button type="button" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-semibold font-mono" onclick="previewStagedDiff()">± View Diff</button>
         </div>
-        <input class="w-full bg-dark-input text-slate-200 text-xs rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2.5 px-3 placeholder-slate-600 outline-none transition font-sans" id="input-commit-msg" placeholder="Commit message..." type="text"/>
-        <button class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs rounded-lg shadow-inner-subtle hover:shadow-glow-violet transition-all active:scale-[0.98] flex items-center justify-center gap-1.5" id="btn-commit-action" type="button">
+        <input class="w-full bg-white text-slate-800 text-xs rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 py-2 px-3 placeholder-slate-400 outline-none transition font-sans shadow-2xs" id="input-commit-msg" placeholder="Commit message (e.g. Added auth feature)..." type="text"/>
+        <button class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-sm hover:shadow-indigo-200 hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-1.5" id="btn-commit-action" type="button">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
           </svg>
-          <span>Commit (-m)</span>
+          <span>Record Commit (-m)</span>
         </button>
       </div>
 
       <!-- OP 3: BRANCH MANAGEMENT -->
-      <div class="space-y-2.5 pt-2 border-t border-dark-border/60">
+      <div class="space-y-2 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
         <div class="flex items-center justify-between">
-          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+          <label class="text-[11px] font-bold tracking-wider uppercase text-slate-700 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             Branch Management
           </label>
-          <span class="text-[10px] font-mono text-slate-500">git checkout -b</span>
+          <span class="text-[10px] font-mono text-slate-400">git branch</span>
         </div>
         <!-- Create Branch Input -->
         <div class="flex gap-2">
-          <input class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2 px-3 placeholder-slate-600 outline-none transition" id="input-branch-name" placeholder="Branch name..." type="text"/>
-          <button class="px-3 py-2 bg-dark-surface hover:bg-slate-800 text-slate-200 hover:text-white border border-dark-border hover:border-slate-600 text-xs font-medium rounded-lg transition active:scale-95" id="btn-create-branch" type="button">
+          <input class="w-full bg-white text-slate-800 text-xs font-mono rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 py-2 px-3 placeholder-slate-400 outline-none transition shadow-2xs" id="input-branch-name" placeholder="New branch name..." type="text"/>
+          <button class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs font-semibold rounded-lg transition active:scale-95 shrink-0 shadow-2xs" id="btn-create-branch" type="button">
             Create
           </button>
         </div>
         <!-- Switch/Checkout Branch Selector -->
-        <div class="flex gap-2 pt-1">
+        <div class="flex gap-2 pt-0.5">
           <div class="relative flex-1">
-            <select class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer" id="select-checkout-branch">
+            <select class="w-full bg-white text-slate-800 text-xs font-mono rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer shadow-2xs" id="select-checkout-branch">
             </select>
             <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
             </svg>
           </div>
-          <button class="px-3 py-2 bg-accent-cyan/15 hover:bg-accent-cyan/25 text-accent-cyan border border-accent-cyan/30 text-xs font-medium rounded-lg transition active:scale-95 whitespace-nowrap" id="btn-checkout-branch" type="button">
+          <button class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 text-xs font-semibold rounded-lg transition active:scale-95 whitespace-nowrap shadow-2xs" id="btn-checkout-branch" type="button">
             Checkout
           </button>
         </div>
       </div>
 
       <!-- OP 4: 3-WAY MERGE WITH PRE-MERGE DIFF PREVIEW -->
-      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+      <div class="space-y-2 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
         <div class="flex items-center justify-between">
-          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+          <label class="text-[11px] font-bold tracking-wider uppercase text-slate-700 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
             3-Way Merge
           </label>
-          <span class="text-[10px] font-mono text-slate-500">git merge &lt;target&gt;</span>
+          <span class="text-[10px] font-mono text-slate-400">git merge</span>
         </div>
         <div class="relative">
-          <select class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer" id="select-merge-branch">
+          <select class="w-full bg-white text-slate-800 text-xs font-mono rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer shadow-2xs" id="select-merge-branch">
           </select>
           <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
@@ -272,11 +282,11 @@
         </div>
         <!-- Dual Action Buttons: Preview Diff & Merge -->
         <div class="grid grid-cols-2 gap-2">
-          <button class="py-2 px-2 bg-dark-surface hover:bg-purple-950/40 text-purple-300 hover:text-white border border-purple-800/40 font-medium text-xs rounded-lg transition active:scale-[0.98] flex items-center justify-center gap-1 shadow-sm" id="btn-merge-diff" onclick="previewMergeDiff()" type="button" title="Inspect changes in target branch before merging">
-            <svg class="w-3.5 h-3.5 text-accent-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <button class="py-2 px-2 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 font-semibold text-xs rounded-lg transition active:scale-[0.98] flex items-center justify-center gap-1 shadow-2xs" id="btn-merge-diff" onclick="previewMergeDiff()" type="button" title="Inspect changes in target branch before merging">
+            <svg class="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
             <span>Preview Diff</span>
           </button>
-          <button class="py-2 px-2 bg-accent-violet hover:bg-purple-600 text-white font-medium text-xs rounded-lg shadow-sm hover:shadow-glow-violet transition active:scale-[0.98] flex items-center justify-center gap-1" id="btn-merge-action" type="button">
+          <button class="py-2 px-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-lg shadow-sm hover:shadow-purple-200 hover:shadow-md transition active:scale-[0.98] flex items-center justify-center gap-1" id="btn-merge-action" type="button">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
             </svg>
@@ -286,18 +296,19 @@
       </div>
 
       <!-- OP 5: RESET / UNDO -->
-      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+      <div class="space-y-1.5 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
         <div class="flex items-center justify-between">
-          <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+          <label class="text-[11px] font-bold tracking-wider uppercase text-slate-700 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
             Undo Last Commit
           </label>
-          <span class="text-[10px] font-mono text-slate-500">git reset</span>
+          <span class="text-[10px] font-mono text-slate-400">git reset</span>
         </div>
-        <button class="w-full py-2 bg-rose-950/30 hover:bg-rose-950/50 text-rose-300 hover:text-rose-200 font-medium text-xs rounded-lg border border-rose-900/40 hover:border-rose-700/60 transition active:scale-[0.98] flex items-center justify-center gap-1.5" id="btn-reset-commit" type="button">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button class="w-full py-2 bg-white hover:bg-rose-50 text-rose-700 font-semibold text-xs rounded-lg border border-rose-200 hover:border-rose-300 transition active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-2xs" id="btn-reset-commit" type="button">
+          <svg class="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M3 10h10a5 5 0 015 5v2M3 10l4-4m-4 4l4 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
           </svg>
-          <span>Reset (undo commit)</span>
+          <span>Reset (Rollback 1 Commit)</span>
         </button>
       </div>
     </div>
@@ -306,36 +317,39 @@
   <!-- ========================================== -->
   <!-- COLUMN 2: Commit Graph & History (Center)  -->
   <!-- ========================================== -->
-  <section class="lg:col-span-5 flex flex-col bg-dark-panel border border-dark-border rounded-xl shadow-xl overflow-hidden dot-pattern relative">
+  <section class="lg:col-span-5 flex flex-col bg-white border border-slate-200/90 rounded-2xl shadow-card overflow-hidden dot-pattern relative">
     <!-- Section Header -->
-    <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-surface/70 backdrop-blur-sm z-10">
+    <div class="p-3.5 px-4 border-b border-slate-200/80 flex items-center justify-between bg-white/90 backdrop-blur-md z-10">
       <div class="flex items-center gap-2.5">
-        <svg class="w-4 h-4 text-accent-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-        </svg>
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-200">Commit Graph &amp; History</h2>
-        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-dark-surface text-slate-400 border border-dark-border" id="commitCountBadge">
+        <div class="w-6 h-6 rounded-md bg-indigo-50 border border-indigo-200/60 flex items-center justify-center text-indigo-600">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700">Commit Graph &amp; History</h2>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-slate-100 text-slate-600 border border-slate-200" id="commitCountBadge">
           0 commits
         </span>
       </div>
-      <button class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg text-slate-300 hover:text-white bg-dark-surface hover:bg-slate-800 border border-dark-border hover:border-slate-600 transition" id="btn-refresh-graph" title="Refresh Git Commit Graph" type="button">
-        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition shadow-2xs" id="btn-refresh-graph" title="Refresh Git Commit Graph" type="button">
+        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
         </svg>
         <span>Refresh</span>
       </button>
     </div>
+
     <!-- Graph Viewport & Commits Timeline -->
-    <div class="flex-1 p-4 overflow-y-auto space-y-4 relative" id="commitList">
+    <div class="flex-1 p-5 overflow-y-auto space-y-4 relative" id="commitList">
       <!-- Empty state (shown dynamically) -->
-      <div class="flex flex-col items-center justify-center h-full text-center py-12" id="emptyCommitState">
-        <div class="w-16 h-16 rounded-full bg-dark-surface border border-dark-border flex items-center justify-center mb-4">
-          <svg class="w-7 h-7 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+      <div class="flex flex-col items-center justify-center h-full text-center py-16" id="emptyCommitState">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mb-4 text-indigo-500 shadow-sm">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
           </svg>
         </div>
-        <p class="text-sm text-slate-400 font-medium mb-1">No commits yet</p>
-        <p class="text-xs text-slate-500">Upload or create a file, stage it, and make your first commit!</p>
+        <p class="text-sm text-slate-800 font-bold mb-1">No commits yet in repository</p>
+        <p class="text-xs text-slate-500 max-w-xs">Upload or create a file in the right panel, stage it, and record your first commit!</p>
       </div>
     </div>
   </section>
@@ -344,27 +358,28 @@
   <!-- COLUMN 3: Right Panel with Tabs            -->
   <!-- Staging / File Explorer / Diff Viewer      -->
   <!-- ========================================== -->
-  <section class="lg:col-span-4 flex flex-col bg-dark-panel border border-dark-border rounded-xl shadow-xl overflow-hidden">
+  <section class="lg:col-span-4 flex flex-col bg-white border border-slate-200/90 rounded-2xl shadow-card overflow-hidden">
     <!-- Header with 3 Interactive Tabs -->
-    <div class="px-3 py-2 border-b border-dark-border flex items-center justify-between bg-dark-surface/50">
-      <div class="flex items-center gap-1 p-0.5 rounded-lg bg-dark-base border border-dark-border">
+    <div class="p-2.5 px-3 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/70">
+      <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-200/60 border border-slate-200">
         <!-- Tab 1: Staging -->
-        <button class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 bg-dark-surface text-accent-cyan shadow-sm border border-accent-cyan/30" id="tab-btn-staging" type="button" onclick="switchRightTab('staging')">
+        <button class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all active:scale-95 flex items-center gap-1.5 bg-white text-indigo-600 shadow-sm" id="tab-btn-staging" type="button" onclick="switchRightTab('staging')">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
           <span>Staging</span>
         </button>
         <!-- Tab 2: Explorer -->
-        <button class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 text-slate-400 hover:text-slate-200" id="tab-btn-explorer" type="button" onclick="switchRightTab('explorer')">
+        <button class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all active:scale-95 flex items-center gap-1.5 text-slate-600 hover:text-slate-900" id="tab-btn-explorer" type="button" onclick="switchRightTab('explorer')">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
           <span>Explorer</span>
         </button>
         <!-- Tab 3: Diff -->
-        <button class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 text-slate-400 hover:text-slate-200" id="tab-btn-diff" type="button" onclick="switchRightTab('diff')">
+        <button class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all active:scale-95 flex items-center gap-1.5 text-slate-600 hover:text-slate-900" id="tab-btn-diff" type="button" onclick="switchRightTab('diff')">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
           <span>Diff</span>
         </button>
       </div>
-      <button class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-surface transition" onclick="openExpandedModal()" title="Open expanded modal view" type="button">
+
+      <button class="text-slate-500 hover:text-slate-800 p-1.5 rounded-lg hover:bg-slate-200/60 transition" onclick="openExpandedModal()" title="Open expanded modal view" type="button">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
       </button>
     </div>
@@ -374,39 +389,39 @@
     <!-- ────────────────────────────────────────── -->
     <div id="tab-pane-staging" class="p-4 space-y-4 overflow-y-auto flex-1">
       <!-- MODULE A: UPLOAD FILE FROM DESKTOP -->
-      <div class="space-y-2">
-        <span class="text-[11px] font-semibold tracking-wider uppercase text-slate-400 block">
+      <div class="space-y-1.5">
+        <span class="text-[11px] font-bold tracking-wider uppercase text-slate-600 block">
           Upload File from Desktop
         </span>
-        <div class="group border-2 border-dashed border-dark-borderLight hover:border-accent-cyan/60 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 bg-dark-input hover:bg-dark-surface" id="dropzone">
-          <div class="w-10 h-10 rounded-full bg-slate-800/80 group-hover:bg-cyan-950/60 flex items-center justify-center mb-2 text-slate-400 group-hover:text-accent-cyan transition-colors">
+        <div class="group border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 bg-slate-50/70 hover:bg-indigo-50/30" id="dropzone">
+          <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-2xs group-hover:scale-105 flex items-center justify-center mb-2 text-indigo-600 transition-all">
             <svg class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
             </svg>
           </div>
-          <p class="text-xs font-medium text-slate-200 mb-0.5">
+          <p class="text-xs font-semibold text-slate-800 mb-0.5">
             Click to choose file or drag &amp; drop
           </p>
           <p class="text-[11px] text-slate-500">
-            Files will be stored in workspace ready to stage
+            Saved directly to workspace ready to stage
           </p>
           <div class="mt-2.5 flex items-center gap-1.5">
-            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-dark-surface rounded border border-dark-border text-slate-400">.cpp</span>
-            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-dark-surface rounded border border-dark-border text-slate-400">.h</span>
-            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-dark-surface rounded border border-dark-border text-slate-400">.txt</span>
-            <span class="text-[10px] font-mono px-1.5 py-0.5 bg-dark-surface rounded border border-dark-border text-slate-400">.py</span>
+            <span class="text-[10px] font-mono font-medium px-2 py-0.5 bg-white rounded-md border border-slate-200 text-slate-600">.cpp</span>
+            <span class="text-[10px] font-mono font-medium px-2 py-0.5 bg-white rounded-md border border-slate-200 text-slate-600">.h</span>
+            <span class="text-[10px] font-mono font-medium px-2 py-0.5 bg-white rounded-md border border-slate-200 text-slate-600">.txt</span>
+            <span class="text-[10px] font-mono font-medium px-2 py-0.5 bg-white rounded-md border border-slate-200 text-slate-600">.py</span>
           </div>
         </div>
         <input type="file" id="fileUploadInput" class="hidden"/>
       </div>
 
       <!-- MODULE B: STAGING INDEX -->
-      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+      <div class="space-y-2 pt-2 border-t border-slate-200/80">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
-            Staging Index <span class="text-slate-500 font-mono">(.branchlite/index)</span>
+          <span class="text-[11px] font-bold tracking-wider uppercase text-slate-600">
+            Staging Index <span class="text-slate-400 font-mono font-normal">(.branchlite/index)</span>
           </span>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-950/50 text-emerald-400 border border-emerald-800/40" id="stagedCountBadge">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300" id="stagedCountBadge">
             0 staged
           </span>
         </div>
@@ -415,12 +430,12 @@
       </div>
 
       <!-- MODULE C: WORKSPACE FILES -->
-      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+      <div class="space-y-2 pt-2 border-t border-slate-200/80">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-semibold tracking-wider uppercase text-slate-400">
+          <span class="text-[11px] font-bold tracking-wider uppercase text-slate-600">
             Workspace Files
           </span>
-          <span class="text-[11px] text-slate-500 font-mono" id="workingCountLabel">0 detected</span>
+          <span class="text-[11px] text-slate-500 font-mono font-medium" id="workingCountLabel">0 detected</span>
         </div>
         <!-- File Items List -->
         <div class="space-y-1.5" id="workspace-files-list"></div>
@@ -433,11 +448,11 @@
     <div id="tab-pane-explorer" class="p-4 space-y-3.5 overflow-y-auto flex-1 hidden">
       <!-- Snapshot Selector -->
       <div>
-        <label class="text-[11px] font-semibold tracking-wider uppercase text-slate-400 block mb-1">
+        <label class="text-[11px] font-bold tracking-wider uppercase text-slate-600 block mb-1">
           Explore Snapshot
         </label>
         <div class="relative">
-          <select id="explorer-source-select" class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border focus:border-brand-500 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer" onchange="loadExplorerSnapshot()">
+          <select id="explorer-source-select" class="w-full bg-slate-50 text-slate-800 text-xs font-mono rounded-lg border border-slate-300 focus:border-indigo-500 py-2 px-3 pr-8 outline-none appearance-none cursor-pointer shadow-2xs" onchange="loadExplorerSnapshot()">
             <!-- Populated dynamically with Branches, Commits, Staging, Working Directory -->
           </select>
           <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -447,12 +462,12 @@
       </div>
 
       <!-- Snapshot Meta Pill & Quick Action -->
-      <div class="flex items-center justify-between text-xs py-1 border-b border-dark-border/60">
+      <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-200">
         <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-accent-cyan"></span>
-          <span id="explorer-file-count" class="font-mono text-[11px] text-slate-400">0 files</span>
+          <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+          <span id="explorer-file-count" class="font-mono text-[11px] text-slate-600 font-semibold">0 files</span>
         </div>
-        <span id="explorer-source-pill" class="text-[10px] font-mono px-2 py-0.5 rounded bg-dark-surface border border-dark-border text-accent-cyan">
+        <span id="explorer-source-pill" class="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700">
           main
         </span>
       </div>
@@ -469,42 +484,42 @@
     <div id="tab-pane-diff" class="p-4 space-y-3.5 overflow-y-auto flex-1 hidden">
       <!-- Quick Preset Buttons -->
       <div>
-        <span class="text-[10px] font-semibold tracking-wider uppercase text-slate-400 block mb-1.5">
+        <span class="text-[10px] font-bold tracking-wider uppercase text-slate-600 block mb-1.5">
           Quick Comparison Presets
         </span>
         <div class="grid grid-cols-2 gap-1.5 text-[11px] font-mono">
-          <button type="button" class="px-2 py-1.5 bg-dark-surface hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-dark-border text-left truncate transition" onclick="setDiffPreset('working-head')">
+          <button type="button" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg border border-slate-200 text-left truncate transition shadow-2xs" onclick="setDiffPreset('working-head')">
             ⚡ Uncommitted
           </button>
-          <button type="button" class="px-2 py-1.5 bg-dark-surface hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-dark-border text-left truncate transition" onclick="setDiffPreset('staged-head')">
+          <button type="button" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg border border-slate-200 text-left truncate transition shadow-2xs" onclick="setDiffPreset('staged-head')">
             📋 Staged vs HEAD
           </button>
-          <button type="button" class="px-2 py-1.5 bg-dark-surface hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-dark-border text-left truncate transition" onclick="setDiffPreset('branch-head')">
+          <button type="button" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg border border-slate-200 text-left truncate transition shadow-2xs" onclick="setDiffPreset('branch-head')">
             🌿 Pre-Merge Diff
           </button>
-          <button type="button" class="px-2 py-1.5 bg-dark-surface hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-dark-border text-left truncate transition" onclick="setDiffPreset('last-commit')">
+          <button type="button" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg border border-slate-200 text-left truncate transition shadow-2xs" onclick="setDiffPreset('last-commit')">
             ⏮ Last Commit
           </button>
         </div>
       </div>
 
       <!-- Custom From/To Pickers -->
-      <div class="space-y-2 pt-2 border-t border-dark-border/60">
+      <div class="space-y-2 pt-2 border-t border-slate-200">
         <div>
-          <label class="text-[10px] font-semibold uppercase text-slate-400 tracking-wider">From (Base / Source A)</label>
+          <label class="text-[10px] font-bold uppercase text-slate-600 tracking-wider">From (Base / Source A)</label>
           <div class="relative mt-1">
-            <select id="diff-source-a" class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border py-1.5 px-2.5 pr-7 outline-none appearance-none"></select>
+            <select id="diff-source-a" class="w-full bg-slate-50 text-slate-800 text-xs font-mono rounded-lg border border-slate-300 py-1.5 px-2.5 pr-7 outline-none appearance-none shadow-2xs"></select>
             <svg class="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
           </div>
         </div>
         <div>
-          <label class="text-[10px] font-semibold uppercase text-slate-400 tracking-wider">To (Target / Source B)</label>
+          <label class="text-[10px] font-bold uppercase text-slate-600 tracking-wider">To (Target / Source B)</label>
           <div class="relative mt-1">
-            <select id="diff-source-b" class="w-full bg-dark-input text-slate-200 text-xs font-mono rounded-lg border border-dark-border py-1.5 px-2.5 pr-7 outline-none appearance-none"></select>
+            <select id="diff-source-b" class="w-full bg-slate-50 text-slate-800 text-xs font-mono rounded-lg border border-slate-300 py-1.5 px-2.5 pr-7 outline-none appearance-none shadow-2xs"></select>
             <svg class="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
           </div>
         </div>
-        <button type="button" class="w-full py-2 bg-gradient-to-r from-accent-cyan to-brand-500 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-semibold text-xs rounded-lg shadow-sm hover:shadow-glow-cyan transition active:scale-[0.98] flex items-center justify-center gap-1.5" onclick="runDiffComparison()">
+        <button type="button" class="w-full py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm hover:shadow-indigo-200 transition active:scale-[0.98] flex items-center justify-center gap-1.5" onclick="runDiffComparison()">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
           <span>Compare &amp; Generate Diff</span>
         </button>
@@ -512,7 +527,7 @@
 
       <!-- Diff Output Container in Panel -->
       <div id="diff-output-container" class="space-y-3 pt-2">
-        <div class="text-center py-6 text-xs text-slate-500 font-mono">
+        <div class="text-center py-8 text-xs text-slate-400 font-mono">
           Select sources or a preset above to view line-by-line diff.
         </div>
       </div>
@@ -523,23 +538,23 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- INTERACTIVE TERMINAL FOOTER                -->
 <!-- ═══════════════════════════════════════════ -->
-<footer class="border-t border-dark-border bg-dark-base px-4 py-2.5 select-none">
+<footer class="border-t border-slate-800 bg-slate-900 px-4 py-2.5 select-none shadow-md">
   <div class="max-w-[1920px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
     <!-- Terminal Output Feed -->
     <div class="flex items-center gap-2.5 text-xs font-mono overflow-x-auto whitespace-nowrap flex-1 min-w-0">
-      <div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-dark-surface border border-dark-border shrink-0">
+      <div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-800 border border-slate-700 shrink-0">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" id="statusDot"></span>
-        <span class="text-[11px] text-slate-400 uppercase tracking-wider" id="statusLabel">System Ready</span>
+        <span class="text-[11px] text-slate-300 font-semibold uppercase tracking-wider" id="statusLabel">System Ready</span>
       </div>
-      <span class="text-brand-400 font-semibold shrink-0">branchlite@vcs:~$</span>
-      <span class="text-accent-cyan truncate" id="terminal-stdout">Ready. Click Init to start or use operations above.</span>
+      <span class="text-indigo-400 font-semibold shrink-0">branchlite@vcs:~$</span>
+      <span class="text-cyan-300 truncate" id="terminal-stdout">Ready. Click Init to start or use operations above.</span>
     </div>
     <!-- Quick Shortcuts & Info -->
-    <div class="flex items-center gap-3 text-[11px] font-mono text-slate-500 shrink-0">
+    <div class="flex items-center gap-3 text-[11px] font-mono text-slate-400 shrink-0">
       <span class="hidden md:inline">OOP Architecture: Git Object Model</span>
       <span class="hidden md:inline">•</span>
       <span class="inline-flex items-center gap-1">
-        <kbd class="px-1.5 py-0.5 text-[10px] bg-dark-surface border border-dark-border rounded text-slate-400">Ctrl</kbd>+<kbd class="px-1.5 py-0.5 text-[10px] bg-dark-surface border border-dark-border rounded text-slate-400">Enter</kbd> to Commit
+        <kbd class="px-1.5 py-0.5 text-[10px] bg-slate-800 border border-slate-700 rounded text-slate-300">Ctrl</kbd>+<kbd class="px-1.5 py-0.5 text-[10px] bg-slate-800 border border-slate-700 rounded text-slate-300">Enter</kbd> to Commit
       </span>
     </div>
   </div>
@@ -548,26 +563,26 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- REUSABLE FILE PREVIEW MODAL                -->
 <!-- ═══════════════════════════════════════════ -->
-<div id="file-preview-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
-  <div class="bg-dark-panel border border-dark-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden anim-in">
+<div id="file-preview-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden anim-in">
     <!-- Modal Header -->
-    <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-surface/80">
+    <div class="p-3.5 px-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
       <div class="flex items-center gap-2.5 overflow-hidden">
-        <span class="w-2.5 h-2.5 rounded-full bg-accent-cyan"></span>
-        <span id="preview-modal-filename" class="font-mono text-sm font-semibold text-white truncate">filename.txt</span>
-        <span id="preview-modal-source" class="text-[10px] font-mono px-2 py-0.5 rounded bg-dark-surface border border-dark-border text-slate-300">Source</span>
-        <span id="preview-modal-hash" class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950/60 border border-indigo-800/40 text-brand-400">hash</span>
+        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+        <span id="preview-modal-filename" class="font-mono text-sm font-bold text-slate-900 truncate">filename.txt</span>
+        <span id="preview-modal-source" class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-700">Source</span>
+        <span id="preview-modal-hash" class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-indigo-50 border border-indigo-200 text-indigo-700">hash</span>
       </div>
       <div class="flex items-center gap-2 shrink-0">
-        <span id="preview-modal-lines" class="text-[11px] font-mono text-slate-400">0 lines</span>
-        <button id="btn-copy-preview" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-dark-surface hover:bg-slate-800 border border-dark-border text-slate-300 hover:text-white transition" onclick="copyPreviewContent()">Copy</button>
-        <button class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-surface transition" onclick="closePreviewModal()">
+        <span id="preview-modal-lines" class="text-[11px] font-mono text-slate-500">0 lines</span>
+        <button id="btn-copy-preview" class="px-3 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition" onclick="copyPreviewContent()">Copy</button>
+        <button class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200/60 transition" onclick="closePreviewModal()">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
         </button>
       </div>
     </div>
     <!-- Modal Code Viewport -->
-    <div class="flex-1 overflow-auto bg-dark-base p-4 font-mono text-xs leading-relaxed" id="preview-code-viewport">
+    <div class="flex-1 overflow-auto bg-slate-50/60 p-4 font-mono text-xs leading-relaxed" id="preview-code-viewport">
       <!-- Code lines rendered dynamically -->
     </div>
   </div>
@@ -576,24 +591,24 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- EXPANDED DIFF VIEWER MODAL                 -->
 <!-- ═══════════════════════════════════════════ -->
-<div id="diff-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
-  <div class="bg-dark-panel border border-dark-border rounded-xl shadow-2xl max-w-5xl w-full max-h-[88vh] flex flex-col overflow-hidden anim-in">
+<div id="diff-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[88vh] flex flex-col overflow-hidden anim-in">
     <!-- Modal Header -->
-    <div class="p-3.5 border-b border-dark-border flex items-center justify-between bg-dark-surface/80">
+    <div class="p-3.5 px-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
       <div class="flex items-center gap-2.5 overflow-hidden">
-        <span class="w-2.5 h-2.5 rounded-full bg-accent-violet"></span>
-        <h3 class="text-sm font-semibold text-white">Diff Inspector &amp; Change Analysis</h3>
-        <span id="modal-diff-summary" class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/60 border border-purple-800/40 text-accent-violet">0 files</span>
+        <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+        <h3 class="text-sm font-bold text-slate-900">Diff Inspector &amp; Change Analysis</h3>
+        <span id="modal-diff-summary" class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">0 files</span>
       </div>
       <div class="flex items-center gap-2 shrink-0">
-        <span id="modal-diff-labels" class="text-[11px] font-mono text-slate-400">A vs B</span>
-        <button class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-surface transition" onclick="closeDiffModal()">
+        <span id="modal-diff-labels" class="text-[11px] font-mono text-slate-500">A vs B</span>
+        <button class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200/60 transition" onclick="closeDiffModal()">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
         </button>
       </div>
     </div>
     <!-- Modal Diff Viewport -->
-    <div class="flex-1 overflow-auto p-4 space-y-4" id="modal-diff-viewport">
+    <div class="flex-1 overflow-auto p-5 space-y-4 bg-slate-50/40" id="modal-diff-viewport">
       <!-- Full-width visual diff rendered dynamically -->
     </div>
   </div>
@@ -612,7 +627,7 @@
     const term = document.getElementById('terminal-stdout');
     if (!term) return;
     term.textContent = message;
-    const colors = { success: 'text-emerald-400', warning: 'text-amber-400', error: 'text-rose-400', info: 'text-accent-cyan' };
+    const colors = { success: 'text-emerald-400', warning: 'text-amber-400', error: 'text-rose-400', info: 'text-cyan-300' };
     term.className = (colors[type] || colors.info) + ' truncate transition-all duration-150';
   }
 
@@ -624,10 +639,10 @@
       const btn = document.getElementById(`tab-btn-${t}`);
       const pane = document.getElementById(`tab-pane-${t}`);
       if (t === tab) {
-        btn.className = 'px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 bg-dark-surface text-accent-cyan shadow-sm border border-accent-cyan/30';
+        btn.className = 'px-3 py-1.5 text-xs font-bold rounded-lg transition-all active:scale-95 flex items-center gap-1.5 bg-white text-indigo-600 shadow-sm';
         pane.classList.remove('hidden');
       } else {
-        btn.className = 'px-2.5 py-1 text-[11px] font-medium rounded-md transition-all active:scale-95 flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
+        btn.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all active:scale-95 flex items-center gap-1.5 text-slate-600 hover:text-slate-900';
         pane.classList.add('hidden');
       }
     });
@@ -701,16 +716,16 @@
     document.getElementById('stagedCountBadge').textContent = stagedFiles.length + ' staged';
     stagedFiles.forEach(f => {
       const d = document.createElement('div');
-      d.className = 'flex items-center justify-between p-2 rounded-lg bg-emerald-950/20 border border-emerald-900/40 text-xs font-mono group anim-in';
+      d.className = 'flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/90 text-xs font-mono group anim-in shadow-2xs hover:bg-emerald-50 transition';
       d.innerHTML = `
         <div class="flex items-center gap-2 overflow-hidden cursor-pointer" onclick="previewFile({type:'staged'}, '${escAttr(f.file)}')">
-          <span class="text-emerald-400 font-bold text-sm">+</span>
-          <span class="text-slate-200 truncate hover:underline">${escHtml(f.file)}</span>
-          <span class="text-[10px] text-slate-500">${f.hash.substring(0,8)}</span>
+          <span class="w-4 h-4 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">+</span>
+          <span class="text-emerald-950 font-semibold truncate hover:underline">${escHtml(f.file)}</span>
+          <span class="text-[10px] text-emerald-600 font-medium">(${f.hash.substring(0,8)})</span>
         </div>
         <div class="flex items-center gap-1.5">
-          <button class="text-[10px] text-accent-cyan hover:text-white px-1.5 py-0.5 rounded hover:bg-dark-surface transition" title="Preview content" onclick="previewFile({type:'staged'}, '${escAttr(f.file)}')">preview</button>
-          <button class="text-[10px] text-slate-500 hover:text-rose-400 opacity-80 group-hover:opacity-100 transition px-1.5 py-0.5 rounded hover:bg-rose-950/40" title="Unstage this file" onclick="unstageFile('${escAttr(f.file)}')">unstage</button>
+          <button class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 px-2 py-0.5 rounded-md hover:bg-emerald-200/60 transition" title="Preview content" onclick="previewFile({type:'staged'}, '${escAttr(f.file)}')">preview</button>
+          <button class="text-[11px] font-semibold text-rose-600 hover:text-rose-800 transition px-2 py-0.5 rounded-md hover:bg-rose-100" title="Unstage this file" onclick="unstageFile('${escAttr(f.file)}')">unstage</button>
         </div>`;
       sl.appendChild(d);
     });
@@ -722,18 +737,18 @@
     document.getElementById('workingCountLabel').textContent = workingFiles.length + ' detected';
     workingFiles.forEach(f => {
       const ext = f.split('.').pop().toLowerCase();
-      const dotColors = { cpp: 'bg-accent-cyan', h: 'bg-brand-400', txt: 'bg-accent-amber', py: 'bg-emerald-400' };
-      const dot = dotColors[ext] || 'bg-slate-500';
+      const dotColors = { cpp: 'bg-blue-500', h: 'bg-indigo-500', txt: 'bg-amber-500', py: 'bg-emerald-500' };
+      const dot = dotColors[ext] || 'bg-slate-400';
       const d = document.createElement('div');
-      d.className = 'flex items-center justify-between p-2 rounded-lg bg-dark-surface border border-dark-border hover:border-slate-700 transition text-xs font-mono group anim-in';
+      d.className = 'flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition text-xs font-mono group anim-in';
       d.innerHTML = `
-        <div class="flex items-center gap-2 overflow-hidden cursor-pointer" onclick="previewFile({type:'working'}, '${escAttr(f)}')">
-          <span class="w-2 h-2 rounded-full ${dot}" title="${ext}"></span>
-          <span class="text-slate-300 hover:underline">${escHtml(f)}</span>
+        <div class="flex items-center gap-2.5 overflow-hidden cursor-pointer" onclick="previewFile({type:'working'}, '${escAttr(f)}')">
+          <span class="w-2.5 h-2.5 rounded-full ${dot} shrink-0" title="${ext}"></span>
+          <span class="text-slate-700 font-semibold hover:underline">${escHtml(f)}</span>
         </div>
         <div class="flex items-center gap-1.5">
-          <button class="text-[10px] text-slate-400 hover:text-white px-1.5 py-0.5 rounded hover:bg-slate-800 transition" onclick="previewFile({type:'working'}, '${escAttr(f)}')">view</button>
-          <button class="px-2.5 py-1 bg-accent-cyan/15 hover:bg-accent-cyan text-accent-cyan hover:text-slate-950 font-semibold rounded-md text-[11px] transition duration-150 flex items-center gap-1 active:scale-95" onclick="quickStage('${escAttr(f)}')" type="button">
+          <button class="text-[11px] font-medium text-slate-500 hover:text-slate-800 px-2 py-0.5 rounded-md hover:bg-slate-100 transition" onclick="previewFile({type:'working'}, '${escAttr(f)}')">view</button>
+          <button class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white font-bold rounded-lg text-[11px] transition duration-150 flex items-center gap-1 active:scale-95 border border-indigo-200 hover:border-transparent" onclick="quickStage('${escAttr(f)}')" type="button">
             + Stage
           </button>
         </div>`;
@@ -753,31 +768,28 @@
     } else {
       if (empty) empty.style.display = 'none';
 
-      const nodeColors = ['accent-cyan', 'accent-violet', 'brand-400', 'accent-emerald', 'accent-amber'];
-
       commits.forEach((c, i) => {
         const isMerge = c.parent2 && c.parent2 !== '-' && c.parent2 !== '';
         const isLast = i === commits.length - 1;
         const isFirst = i === 0;
-        const color = nodeColors[i % nodeColors.length];
 
         let branchTags = '';
         if (isFirst) {
-          branchTags = `<span class="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          branchTags = `<span class="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
             HEAD → ${escHtml(s.currentBranch || 'main')}
           </span>`;
         }
         if (isMerge) {
-          branchTags += `<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">🔀 merge</span>`;
+          branchTags += `<span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300">🔀 merge</span>`;
         }
 
         let parentInfo = '';
         if (c.parent && c.parent !== '-') {
-          parentInfo = `<span class="text-[10px] font-mono text-slate-500">← ${c.parent.substring(0,7)}</span>`;
+          parentInfo = `<span class="text-[11px] font-mono text-slate-500 font-medium">← ${c.parent.substring(0,7)}</span>`;
         }
         if (isMerge) {
-          parentInfo += ` <span class="text-[10px] font-mono text-purple-400">← ${c.parent2.substring(0,7)}</span>`;
+          parentInfo += ` <span class="text-[11px] font-mono text-purple-700 font-medium">← ${c.parent2.substring(0,7)}</span>`;
         }
 
         const fileCount = (c.files || []).length;
@@ -785,55 +797,46 @@
 
         const wrapper = document.createElement('div');
         wrapper.className = 'relative flex items-start gap-3.5 group commit-node-wrapper anim-in';
-        wrapper.style.animationDelay = (i * 0.05) + 's';
-
-        const colorMap = {
-          'accent-cyan': { bg: 'bg-accent-cyan', ring: 'ring-cyan-500/20', glow: 'shadow-glow-cyan', grad: 'from-accent-cyan to-indigo-500', badge: 'bg-cyan-950/60 text-accent-cyan border-cyan-800/40', hover: 'group-hover:border-accent-cyan/40' },
-          'accent-violet': { bg: 'bg-accent-violet', ring: 'ring-purple-500/20', glow: 'shadow-glow-violet', grad: 'from-indigo-500 to-accent-violet', badge: 'bg-purple-950/60 text-accent-violet border-purple-800/40', hover: 'group-hover:border-accent-violet/40' },
-          'brand-400': { bg: 'bg-brand-400', ring: 'ring-indigo-500/20', glow: '', grad: 'from-brand-400 to-purple-500', badge: 'bg-indigo-950/60 text-brand-400 border-indigo-800/40', hover: 'group-hover:border-brand-400/40' },
-          'accent-emerald': { bg: 'bg-accent-emerald', ring: 'ring-emerald-500/20', glow: '', grad: 'from-accent-emerald to-cyan-600', badge: 'bg-emerald-950/60 text-accent-emerald border-emerald-800/40', hover: 'group-hover:border-accent-emerald/40' },
-          'accent-amber': { bg: 'bg-accent-amber', ring: 'ring-amber-500/20', glow: '', grad: 'from-accent-amber to-orange-600', badge: 'bg-amber-950/60 text-accent-amber border-amber-800/40', hover: 'group-hover:border-accent-amber/40' },
-        };
-        const cm = colorMap[color] || colorMap['accent-cyan'];
+        wrapper.style.animationDelay = (i * 0.04) + 's';
 
         wrapper.innerHTML = `
           <!-- Timeline Vertical Track & Node Dot -->
           <div class="flex flex-col items-center self-stretch">
-            <div class="w-4 h-4 rounded-full ${cm.bg} ring-4 ${cm.ring} flex items-center justify-center ${cm.glow} z-10">
-              <div class="w-1.5 h-1.5 rounded-full bg-dark-panel"></div>
+            <div class="w-5 h-5 rounded-full bg-white border-2 border-indigo-600 ring-4 ring-indigo-50 flex items-center justify-center shadow-sm z-10">
+              <div class="w-2 h-2 rounded-full bg-indigo-600"></div>
             </div>
-            ${isLast ? '' : `<div class="w-0.5 flex-1 bg-gradient-to-b ${cm.grad} my-1"></div>`}
+            ${isLast ? '' : `<div class="w-0.5 flex-1 bg-gradient-to-b from-indigo-300 via-slate-300 to-slate-200 my-1"></div>`}
           </div>
           <!-- Commit Details Card -->
-          <div class="flex-1 bg-dark-surface/90 hover:bg-dark-surface border border-dark-border ${cm.hover} rounded-xl p-3.5 transition-all shadow-sm">
+          <div class="flex-1 bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-indigo-300 rounded-2xl p-4 transition-all shadow-card hover:shadow-card-hover">
             <div class="flex items-center justify-between gap-2 mb-1.5">
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="px-1.5 py-0.5 text-[11px] font-mono font-medium rounded ${cm.badge} border">
+                <span class="px-2 py-0.5 text-xs font-mono font-bold rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
                   ${c.id.substring(0,7)}
                 </span>
                 ${branchTags}
               </div>
-              <span class="text-[11px] text-slate-500 font-mono shrink-0">${escHtml(c.time || '')}</span>
+              <span class="text-xs text-slate-500 font-mono font-medium shrink-0">${escHtml(c.time || '')}</span>
             </div>
-            <p class="text-xs font-medium text-slate-200 leading-snug">
+            <p class="text-sm font-semibold text-slate-800 leading-snug">
               ${escHtml(c.message || 'no message')}
             </p>
-            <div class="mt-2.5 flex items-center justify-between gap-2 text-[11px] text-slate-400 pt-2 border-t border-dark-border/40 flex-wrap">
+            <div class="mt-3 flex items-center justify-between gap-2 text-xs text-slate-500 pt-2.5 border-t border-slate-100 flex-wrap">
               <div class="flex items-center gap-2">
-                <span class="flex items-center gap-1">
-                  <span class="w-4 h-4 rounded-full bg-indigo-600/40 text-[9px] font-mono flex items-center justify-center text-indigo-300">BL</span>
+                <span class="flex items-center gap-1 font-semibold text-slate-700">
+                  <span class="w-4 h-4 rounded-full bg-indigo-100 text-[9px] font-mono flex items-center justify-center text-indigo-700 font-bold">BL</span>
                   @branchlite
                 </span>
                 <span>•</span>
-                <span class="font-mono text-[10px] text-slate-400">${fileStr}</span>
+                <span class="font-mono text-slate-500 font-medium">${fileStr}</span>
                 ${parentInfo ? '<span>•</span>' + parentInfo : ''}
               </div>
               <!-- Quick Explorer & Diff Buttons on Card -->
               <div class="flex items-center gap-1.5 ml-auto">
-                <button onclick="openCommitExplorer('${c.id}')" class="px-2 py-0.5 rounded text-[10px] font-mono bg-dark-base hover:bg-slate-800 text-slate-300 hover:text-white border border-dark-border transition active:scale-95 flex items-center gap-1" title="Explore files stored in this commit snapshot">
+                <button onclick="openCommitExplorer('${c.id}')" class="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 hover:border-indigo-200 transition active:scale-95 flex items-center gap-1 shadow-2xs" title="Explore files stored in this commit snapshot">
                   <span>📂 Files</span>
                 </button>
-                <button onclick="openCommitDiff('${c.id}', '${c.parent && c.parent !== '-' ? c.parent : ''}')" class="px-2 py-0.5 rounded text-[10px] font-mono bg-dark-base hover:bg-slate-800 text-slate-300 hover:text-white border border-dark-border transition active:scale-95 flex items-center gap-1" title="Compare this commit with its parent">
+                <button onclick="openCommitDiff('${c.id}', '${c.parent && c.parent !== '-' ? c.parent : ''}')" class="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 hover:border-indigo-200 transition active:scale-95 flex items-center gap-1 shadow-2xs" title="Compare this commit with its parent">
                   <span>± Diff</span>
                 </button>
               </div>
@@ -861,7 +864,7 @@
     (currentRepoState.branches || []).forEach(b => {
       const o = document.createElement('option');
       o.value = `branch:${b.name}`;
-      o.textContent = `branch: ${b.name} (${b.name === currentRepoState.currentBranch ? 'current' : b.tip.substring(0,7) || 'empty'})`;
+      o.textContent = `Branch: ${b.name} (${b.name === currentRepoState.currentBranch ? 'current' : b.tip.substring(0,7) || 'empty'})`;
       grpB.appendChild(o);
     });
     sel.appendChild(grpB);
@@ -931,26 +934,26 @@
     countEl.textContent = `${files.length} file${files.length !== 1 ? 's' : ''}`;
 
     if (files.length === 0) {
-      list.innerHTML = `<div class="text-center py-6 text-xs text-slate-500 font-mono">No files saved in this snapshot.</div>`;
+      list.innerHTML = `<div class="text-center py-8 text-xs text-slate-400 font-mono">No files saved in this snapshot.</div>`;
       return;
     }
 
     files.forEach(f => {
       const ext = f.file.split('.').pop().toLowerCase();
-      const dotColors = { cpp: 'bg-accent-cyan', h: 'bg-brand-400', txt: 'bg-accent-amber', py: 'bg-emerald-400' };
-      const dot = dotColors[ext] || 'bg-slate-500';
+      const dotColors = { cpp: 'bg-blue-500', h: 'bg-indigo-500', txt: 'bg-amber-500', py: 'bg-emerald-500' };
+      const dot = dotColors[ext] || 'bg-slate-400';
 
       const row = document.createElement('div');
-      row.className = 'flex items-center justify-between p-2 rounded-lg bg-dark-surface border border-dark-border hover:border-accent-cyan/40 transition text-xs font-mono group anim-in';
+      row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition text-xs font-mono group anim-in';
       row.innerHTML = `
         <div class="flex items-center gap-2 overflow-hidden cursor-pointer" onclick="previewFile(${JSON.stringify(source).replace(/"/g, '&quot;')}, '${escAttr(f.file)}')">
-          <span class="w-2 h-2 rounded-full ${dot}"></span>
-          <span class="text-slate-200 hover:text-accent-cyan truncate font-medium">${escHtml(f.file)}</span>
-          <span class="text-[10px] text-slate-500 font-mono">${f.hash && f.hash !== 'working' ? f.hash.substring(0,8) : ''}</span>
+          <span class="w-2.5 h-2.5 rounded-full ${dot} shrink-0"></span>
+          <span class="text-slate-800 hover:text-indigo-600 truncate font-semibold">${escHtml(f.file)}</span>
+          <span class="text-[10px] text-slate-400 font-mono">${f.hash && f.hash !== 'working' ? f.hash.substring(0,8) : ''}</span>
         </div>
-        <div class="flex items-center gap-1.5 shrink-0">
-          <span class="text-[10px] text-slate-500">${f.size || 0}B</span>
-          <button class="px-2 py-0.5 rounded text-[11px] bg-dark-base hover:bg-slate-800 text-accent-cyan border border-dark-border transition" onclick="previewFile(${JSON.stringify(source).replace(/"/g, '&quot;')}, '${escAttr(f.file)}')">
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="text-[10px] text-slate-400 font-medium">${f.size || 0}B</span>
+          <button class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition" onclick="previewFile(${JSON.stringify(source).replace(/"/g, '&quot;')}, '${escAttr(f.file)}')">
             Preview
           </button>
         </div>`;
@@ -990,10 +993,10 @@
       const lines = (d.content || '').split('\n');
       lines.forEach((line, idx) => {
         const lineRow = document.createElement('div');
-        lineRow.className = 'flex items-start hover:bg-white/[0.03] px-1 py-0.5';
+        lineRow.className = 'flex items-start hover:bg-slate-100/80 px-1 py-0.5 rounded';
         lineRow.innerHTML = `
           <span class="gutter-num">${idx + 1}</span>
-          <pre class="flex-1 overflow-x-auto text-slate-200 whitespace-pre">${escHtml(line)}</pre>`;
+          <pre class="flex-1 overflow-x-auto text-slate-800 whitespace-pre">${escHtml(line)}</pre>`;
         viewport.appendChild(lineRow);
       });
 
@@ -1013,10 +1016,10 @@
     navigator.clipboard.writeText(cachedPreviewContent).then(() => {
       const btn = document.getElementById('btn-copy-preview');
       btn.textContent = 'Copied!';
-      btn.className = 'px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-950/60 border border-emerald-800/40 text-emerald-300 transition';
+      btn.className = 'px-3 py-1 text-xs font-semibold rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 transition';
       setTimeout(() => {
         btn.textContent = 'Copy';
-        btn.className = 'px-2.5 py-1 text-xs font-medium rounded-lg bg-dark-surface hover:bg-slate-800 border border-dark-border text-slate-300 hover:text-white transition';
+        btn.className = 'px-3 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition';
       }, 1500);
     });
   }
@@ -1152,43 +1155,43 @@
   function generateDiffHTML(data) {
     const files = data.files || [];
     if (files.length === 0) {
-      return `<div class="p-4 rounded-xl bg-dark-surface border border-dark-border text-center">
-        <p class="text-xs font-mono text-emerald-400 font-semibold mb-1">✓ No Differences Found</p>
+      return `<div class="p-6 rounded-2xl bg-white border border-slate-200 text-center shadow-2xs">
+        <p class="text-xs font-mono text-emerald-700 font-bold mb-1">✓ No Differences Found</p>
         <p class="text-[11px] text-slate-500 font-mono">${escHtml(data.sourceA_label)} and ${escHtml(data.sourceB_label)} are identical.</p>
       </div>`;
     }
 
-    let out = `<div class="text-[11px] font-mono text-slate-400 pb-1 flex items-center justify-between">
+    let out = `<div class="text-xs font-mono text-slate-600 pb-1.5 flex items-center justify-between font-semibold">
       <span>${escHtml(data.sourceA_label)} ➔ ${escHtml(data.sourceB_label)}</span>
-      <span class="text-accent-cyan">${files.length} changed file${files.length !== 1 ? 's' : ''}</span>
+      <span class="text-indigo-600 font-bold">${files.length} changed file${files.length !== 1 ? 's' : ''}</span>
     </div>`;
 
     files.forEach(f => {
-      const statusBadge = f.status === 'added' ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">NEW</span>' :
-                          f.status === 'deleted' ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-rose-950/60 text-rose-400 border border-rose-800/40">DELETED</span>' :
-                          '<span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-950/60 text-amber-400 border border-amber-800/40">MODIFIED</span>';
+      const statusBadge = f.status === 'added' ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">NEW</span>' :
+                          f.status === 'deleted' ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">DELETED</span>' :
+                          '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">MODIFIED</span>';
 
       out += `
-        <div class="border border-dark-border rounded-xl overflow-hidden bg-dark-surface shadow-sm">
+        <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-2xs">
           <!-- File Diff Header -->
-          <div class="px-3 py-2 bg-dark-panel/90 border-b border-dark-border flex items-center justify-between text-xs font-mono">
+          <div class="px-3.5 py-2 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-mono">
             <div class="flex items-center gap-2 overflow-hidden">
               ${statusBadge}
-              <span class="font-semibold text-slate-200 truncate">${escHtml(f.filename)}</span>
+              <span class="font-bold text-slate-800 truncate">${escHtml(f.filename)}</span>
             </div>
-            <div class="flex items-center gap-2 text-[10px] shrink-0 font-mono">
-              <span class="text-emerald-400 font-bold">+${f.stats.added}</span>
-              <span class="text-rose-400 font-bold">-${f.stats.deleted}</span>
+            <div class="flex items-center gap-2 text-[11px] shrink-0 font-mono font-bold">
+              <span class="text-emerald-700">+${f.stats.added}</span>
+              <span class="text-rose-600">-${f.stats.deleted}</span>
             </div>
           </div>
           <!-- Line Chunks -->
-          <div class="p-2 font-mono text-xs overflow-x-auto bg-dark-base max-h-72 overflow-y-auto">`;
+          <div class="p-2 font-mono text-xs overflow-x-auto bg-slate-50/40 max-h-72 overflow-y-auto">`;
 
       (f.chunks || []).forEach(chk => {
         const rowCls = chk.type === 'add' ? 'diff-row-add' : chk.type === 'del' ? 'diff-row-del' : 'diff-row-same';
         const sign = chk.type === 'add' ? '+' : chk.type === 'del' ? '-' : ' ';
         out += `
-          <div class="flex items-start py-0.5 px-1.5 ${rowCls}">
+          <div class="flex items-start py-0.5 px-2 ${rowCls} text-xs font-mono">
             <span class="gutter-num">${chk.oldNum || ''}</span>
             <span class="gutter-num">${chk.newNum || ''}</span>
             <span class="w-4 text-center font-bold select-none shrink-0">${sign}</span>
@@ -1370,4 +1373,5 @@
   // ─── INITIAL LOAD ──────────────────────────────────────
   fetchStatus();
 </script>
-</body></html>
+</body>
+</html>
