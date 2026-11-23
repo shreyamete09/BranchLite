@@ -136,19 +136,22 @@
         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs">
           C++17 OOP
         </span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs">
+          Collaborate Ready
+        </span>
       </div>
-      <p class="text-[11px] text-slate-500 -mt-0.5 font-medium hidden sm:block">Git-compatible Object Engine &amp; DAG Visualizer</p>
+      <p class="text-[11px] text-slate-500 -mt-0.5 font-medium hidden sm:block">Git-compatible Object Engine &amp; Cloud Collaboration Hub</p>
     </div>
   </div>
 
   <!-- Global Operations & Status -->
   <div class="flex items-center gap-2.5 sm:gap-3">
     <!-- Quick Explorer & Diff Pills -->
-    <button class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition active:scale-95 shadow-subtle" type="button" onclick="switchRightTab('explorer')">
+    <button class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition active:scale-95 shadow-subtle" type="button" onclick="switchRightTab('explorer'); switchMainSection('workspace');">
       <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
       <span>File Explorer</span>
     </button>
-    <button class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition active:scale-95 shadow-subtle" type="button" onclick="switchRightTab('diff')">
+    <button class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition active:scale-95 shadow-subtle" type="button" onclick="switchRightTab('diff'); switchMainSection('workspace');">
       <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
       <span>Diff Viewer</span>
     </button>
@@ -167,13 +170,81 @@
       <span class="text-slate-500 text-[11px] font-sans">branch:</span>
       <span class="text-emerald-700 font-bold" id="branchIndicator">main</span>
     </div>
+
+    <!-- Notification Bell Button -->
+    <button class="relative p-2 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-slate-100 border border-slate-200 transition active:scale-95 shadow-2xs" id="btn-open-notifications" onclick="switchMainSection('notifications')" title="Notifications">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      <span id="nav-notif-badge" class="hidden absolute -top-1 -right-1 px-1.5 py-0.2 text-[9px] font-bold rounded-full bg-rose-500 text-white animate-pulse">0</span>
+    </button>
+
+    <!-- Collaborate User Profile / Login Widget -->
+    <div id="user-nav-status">
+      <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition active:scale-95" onclick="openAuthModal()">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Sign In / Join</span>
+      </button>
+    </div>
   </div>
 </header>
 
 <!-- ═══════════════════════════════════════════ -->
-<!-- MAIN THREE-COLUMN LAYOUT                   -->
+<!-- COLLABORATE SUB-NAVIGATION BAR              -->
 <!-- ═══════════════════════════════════════════ -->
-<main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 sm:p-5 overflow-hidden max-w-[1920px] w-full mx-auto">
+<nav class="bg-white border-b border-slate-200 px-4 sm:px-6 py-2 overflow-x-auto select-none shadow-2xs sticky top-16 z-30">
+  <div class="max-w-[1920px] mx-auto flex items-center justify-between gap-4">
+    <div class="flex items-center gap-1.5 shrink-0" id="main-nav-tabs">
+      <button class="nav-tab-btn active-tab px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200" onclick="switchMainSection('workspace')" id="tab-workspace">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>My Workspace</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5" onclick="switchMainSection('repos')" id="tab-repos">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>My Repositories</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5" onclick="switchMainSection('friends')" id="tab-friends">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Friends</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5" onclick="switchMainSection('friend-requests')" id="tab-friend-requests">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Friend Requests</span>
+        <span id="badge-incoming-requests" class="hidden px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-indigo-600 text-white">0</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5" onclick="switchMainSection('shared-with-me')" id="tab-shared-with-me">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Shared With Me</span>
+        <span id="badge-shared-with-me" class="hidden px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-emerald-600 text-white">0</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5" onclick="switchMainSection('shared-by-me')" id="tab-shared-by-me">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Shared By Me</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5" onclick="switchMainSection('contributors')" id="tab-contributors">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Contributors</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5" onclick="switchMainSection('notifications')" id="tab-notifications">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Notifications</span>
+      </button>
+      <button class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5" onclick="switchMainSection('profile')" id="tab-profile">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Profile</span>
+      </button>
+    </div>
+    <div class="hidden sm:flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+      <span class="inline-flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>BranchLite Collaborate</span>
+      </span>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MAIN THREE-COLUMN LAYOUT (MY WORKSPACE)     -->
+<!-- ═══════════════════════════════════════════ -->
+<main id="view-workspace" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 sm:p-5 overflow-hidden max-w-[1920px] w-full mx-auto">
 
   <!-- ========================================== -->
   <!-- COLUMN 1: Git Operations (Left Panel)      -->
@@ -536,6 +607,246 @@
 </main>
 
 <!-- ═══════════════════════════════════════════ -->
+<!-- COLLABORATE VIEWS CONTAINER                 -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- VIEW 1: MY REPOSITORIES -->
+<div id="view-repos" class="hidden flex-1 max-w-[1920px] w-full mx-auto p-4 sm:p-5 flex flex-col space-y-4">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+    <div>
+      <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>My Cloud Repositories</span>
+      </h2>
+      <p class="text-xs text-slate-500">Manage remote repositories, store files online, and collaborate with your team.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="toggleNewRepoForm()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-sm transition active:scale-95 flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>New Repository</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Inline New Repo Form (Hidden by default) -->
+  <div id="new-repo-card" class="hidden bg-white p-4 rounded-2xl border border-indigo-200 shadow-sm space-y-3 anim-in">
+    <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-700">Create Remote Repository</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <input type="text" id="input-repo-name" placeholder="Repository Name (e.g. cpp-algorithms)" class="w-full bg-slate-50 text-slate-800 text-xs rounded-lg border border-slate-300 p-2 outline-none focus:border-indigo-500"/>
+      <input type="text" id="input-repo-desc" placeholder="Short description..." class="w-full bg-slate-50 text-slate-800 text-xs rounded-lg border border-slate-300 p-2 outline-none focus:border-indigo-500"/>
+    </div>
+    <div class="flex justify-end gap-2">
+      <button onclick="toggleNewRepoForm()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+      <button onclick="createCollabRepo()" class="px-4 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Create</button>
+    </div>
+  </div>
+
+  <!-- Repositories Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="repos-grid">
+    <!-- Populated dynamically -->
+  </div>
+</div>
+
+<!-- VIEW 2: FRIENDS -->
+<div id="view-friends" class="hidden flex-1 max-w-[1920px] w-full mx-auto p-4 sm:p-5 flex flex-col space-y-4">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+    <div>
+      <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Friends List</span>
+      </h2>
+      <p class="text-xs text-slate-500">Collaborate and selectively share your code files with connected developers.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="switchMainSection('friend-requests')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition active:scale-95 flex items-center gap-1.5">
+        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Add &amp; Manage Requests</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Friends Cards Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="friends-grid">
+    <!-- Populated dynamically -->
+  </div>
+</div>
+
+<!-- VIEW 3: FRIEND REQUESTS -->
+<div id="view-friend-requests" class="hidden flex-1 max-w-[1920px] w-full mx-auto p-4 sm:p-5 flex flex-col space-y-4">
+  <!-- Search Users Bar -->
+  <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+      <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      <span>Find Users &amp; Connect</span>
+    </h2>
+    <div class="flex gap-2">
+      <input type="text" id="input-search-users" placeholder="Search by username or name..." class="flex-1 bg-slate-50 text-slate-800 text-xs rounded-xl border border-slate-300 p-2.5 outline-none focus:border-indigo-500 font-mono" onkeydown="if(event.key==='Enter') searchCollabUsers()"/>
+      <button onclick="searchCollabUsers()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-sm transition active:scale-95 shrink-0">Search</button>
+    </div>
+    <!-- Search Results Container -->
+    <div id="user-search-results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1"></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Incoming Requests -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3 flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+          <span>Incoming Requests</span>
+        </h3>
+        <span id="incoming-count-badge" class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">0</span>
+      </div>
+      <div class="space-y-2 flex-1 overflow-y-auto" id="incoming-requests-list">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+
+    <!-- Outgoing Requests -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3 flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+          <span>Sent Requests (Pending)</span>
+        </h3>
+        <span id="outgoing-count-badge" class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-slate-100 text-slate-600 border border-slate-200">0</span>
+      </div>
+      <div class="space-y-2 flex-1 overflow-y-auto" id="outgoing-requests-list">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW 4: SHARED WITH ME -->
+<div id="view-shared-with-me" class="hidden flex-1 max-w-[1920px] w-full mx-auto p-4 sm:p-5 flex flex-col space-y-4">
+  <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div>
+      <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Files Shared With Me</span>
+      </h2>
+      <p class="text-xs text-slate-500">Collaborate on files shared by your friends. View contents, contribute commits, or sync to your local BranchLite repository.</p>
+    </div>
+    <button onclick="loadSharedWithMe()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition flex items-center gap-1.5">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      <span>Refresh</span>
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="shared-with-me-grid">
+    <!-- Populated dynamically -->
+  </div>
+</div>
+
+<!-- VIEW 5: SHARED BY ME -->
+<div id="view-shared-by-me" class="hidden flex-1 max-w-[1920px] w-full mx-auto p-4 sm:p-5 flex flex-col space-y-4">
+  <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div>
+      <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Files Shared By Me</span>
+      </h2>
+      <p class="text-xs text-slate-500">Manage active access permissions and revoke friend access at any time.</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs font-mono">
+        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-sans font-bold uppercase text-[10px] tracking-wider">
+          <tr>
+            <th class="py-3 px-4">File Name</th>
+            <th class="py-3 px-4">Shared With</th>
+            <th class="py-3 px-4">Permission</th>
+            <th class="py-3 px-4">Date Shared</th>
+            <th class="py-3 px-4 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody id="shared-by-me-tbody" class="divide-y divide-slate-100">
+          <!-- Populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW 6: CONTRIBUTORS -->
+<div id="view-contributors" class="hidden flex-1 max-w-[1920px] w-full mx-auto p-4 sm:p-5 flex flex-col space-y-4">
+  <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+      <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      <span>Contributors &amp; Team Activity</span>
+    </h2>
+    <p class="text-xs text-slate-500">Track commits and code contributions from collaborators across shared files.</p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="contributors-grid">
+    <!-- Populated dynamically -->
+  </div>
+</div>
+
+<!-- VIEW 7: NOTIFICATIONS -->
+<div id="view-notifications" class="hidden flex-1 max-w-[1920px] w-full mx-auto p-4 sm:p-5 flex flex-col space-y-4">
+  <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div>
+      <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <span>Notifications Stream</span>
+      </h2>
+      <p class="text-xs text-slate-500">Real-time alerts for friend requests, shared files, remote commits, and access changes.</p>
+    </div>
+    <button onclick="markAllNotificationsRead()" class="px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl border border-indigo-200 transition">Mark All as Read</button>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2.5 max-w-4xl" id="notifications-list">
+    <!-- Populated dynamically -->
+  </div>
+</div>
+
+<!-- VIEW 8: USER PROFILE -->
+<div id="view-profile" class="hidden flex-1 max-w-[1920px] w-full mx-auto p-4 sm:p-5 flex flex-col space-y-4">
+  <div class="max-w-2xl bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+    <div class="flex items-center gap-4">
+      <div id="profile-avatar" class="w-16 h-16 rounded-2xl bg-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center shadow-md">U</div>
+      <div>
+        <h2 id="profile-display-name" class="text-lg font-bold text-slate-900">User</h2>
+        <p id="profile-username" class="text-xs font-mono text-indigo-600 font-semibold">@username</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span id="profile-user-id" class="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-100 text-slate-600 border border-slate-200">#usr_id</span>
+          <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Connected Online
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-cols-3 gap-3">
+      <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
+        <span class="block text-xl font-bold text-slate-800" id="profile-stat-friends">0</span>
+        <span class="text-[11px] font-medium text-slate-500">Friends</span>
+      </div>
+      <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
+        <span class="block text-xl font-bold text-slate-800" id="profile-stat-shares">0</span>
+        <span class="text-[11px] font-medium text-slate-500">Shared Files</span>
+      </div>
+      <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
+        <span class="block text-xl font-bold text-slate-800" id="profile-stat-commits">0</span>
+        <span class="text-[11px] font-medium text-slate-500">Remote Commits</span>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-100 pt-4 flex justify-between items-center">
+      <span class="text-xs text-slate-400 font-mono" id="profile-joined-date">Joined recently</span>
+      <button onclick="collabLogout()" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs rounded-xl border border-rose-200 transition active:scale-95">
+        Log Out of Collaborate
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
 <!-- INTERACTIVE TERMINAL FOOTER                -->
 <!-- ═══════════════════════════════════════════ -->
 <footer class="border-t border-slate-800 bg-slate-900 px-4 py-2.5 select-none shadow-md">
@@ -610,6 +921,221 @@
     <!-- Modal Diff Viewport -->
     <div class="flex-1 overflow-auto p-5 space-y-4 bg-slate-50/40" id="modal-diff-viewport">
       <!-- Full-width visual diff rendered dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- COLLABORATE: AUTHENTICATION MODAL           -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden anim-in">
+    <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">BL</div>
+        <h3 class="text-sm font-bold text-slate-900">BranchLite Collaborate</h3>
+      </div>
+      <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200/60">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      </button>
+    </div>
+
+    <!-- Auth Tabs (Login vs Register) -->
+    <div class="flex border-b border-slate-200 bg-slate-100/70 p-1 m-4 rounded-xl gap-1">
+      <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 py-1.5 text-xs font-semibold rounded-lg bg-white text-indigo-700 shadow-sm transition">Sign In</button>
+      <button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">Create Account</button>
+    </div>
+
+    <div class="px-5 pb-5 space-y-3.5">
+      <!-- Error / Success Alert Box -->
+      <div id="auth-alert" class="hidden p-2.5 rounded-xl text-xs font-medium"></div>
+
+      <!-- Register Display Name field (only in register) -->
+      <div id="auth-group-name" class="hidden space-y-1">
+        <label class="text-[10px] font-bold uppercase text-slate-600 tracking-wider">Your Full Name</label>
+        <input type="text" id="auth-name" placeholder="e.g. Alice Cooper" class="w-full bg-slate-50 text-slate-800 text-xs rounded-xl border border-slate-300 p-2.5 outline-none focus:border-indigo-500"/>
+      </div>
+
+      <!-- Username field -->
+      <div class="space-y-1">
+        <label class="text-[10px] font-bold uppercase text-slate-600 tracking-wider">Username</label>
+        <input type="text" id="auth-username" placeholder="e.g. alice" class="w-full bg-slate-50 text-slate-800 text-xs rounded-xl border border-slate-300 p-2.5 outline-none focus:border-indigo-500 font-mono"/>
+      </div>
+
+      <!-- Password field -->
+      <div class="space-y-1">
+        <label class="text-[10px] font-bold uppercase text-slate-600 tracking-wider">Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-slate-50 text-slate-800 text-xs rounded-xl border border-slate-300 p-2.5 outline-none focus:border-indigo-500 font-mono" onkeydown="if(event.key==='Enter') submitAuthForm()"/>
+      </div>
+
+      <button id="auth-submit-btn" onclick="submitAuthForm()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5">
+        <span>Sign In</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- COLLABORATE: SELECTIVE FILE SHARING MODAL   -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="share-file-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden anim-in">
+    <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Selective File Sharing</h3>
+          <p class="text-[11px] text-slate-500 font-mono" id="share-modal-filename">filename.cpp</p>
+        </div>
+      </div>
+      <button onclick="closeShareModal()" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200/60">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      </button>
+    </div>
+
+    <div class="p-5 space-y-4">
+      <div id="share-alert" class="hidden p-2.5 rounded-xl text-xs font-medium"></div>
+
+      <!-- Add Friend Share Form -->
+      <div class="space-y-3 bg-purple-50/50 p-3.5 rounded-xl border border-purple-100">
+        <h4 class="text-xs font-bold text-purple-900 uppercase tracking-wider">Share with a Friend</h4>
+        <div class="space-y-2">
+          <div>
+            <label class="text-[10px] font-bold uppercase text-slate-600 tracking-wider">Select Friend</label>
+            <select id="share-friend-select" class="mt-1 w-full bg-white text-slate-800 text-xs rounded-xl border border-slate-300 p-2.5 outline-none focus:border-purple-500 cursor-pointer">
+              <option value="">-- Choose a friend --</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold uppercase text-slate-600 tracking-wider">Select Permission</label>
+            <select id="share-permission-select" class="mt-1 w-full bg-white text-slate-800 text-xs rounded-xl border border-slate-300 p-2.5 outline-none focus:border-purple-500 cursor-pointer">
+              <option value="view">View Only (Friends can view &amp; sync, but cannot commit)</option>
+              <option value="edit">Can Edit (Friends can modify and commit changes)</option>
+            </select>
+          </div>
+          <button onclick="submitShareFile()" class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs rounded-xl shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5 mt-2">
+            <span>Grant Share Access</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Shares List -->
+      <div class="space-y-2">
+        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Active Access Permissions</h4>
+        <div id="share-active-list" class="space-y-2 max-h-48 overflow-y-auto">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- COLLABORATE: LIVE COMMIT & CODE EDITOR      -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="collab-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 hidden">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden anim-in">
+    <!-- Header -->
+    <div class="p-3.5 px-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+      <div class="flex items-center gap-2.5 overflow-hidden">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+        <span id="collab-modal-filename" class="font-mono text-sm font-bold text-slate-900 truncate">filename.cpp</span>
+        <span id="collab-modal-perm-badge" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Can Edit</span>
+        <span id="collab-modal-version" class="text-[10px] font-mono text-slate-500">v1</span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="syncCurrentCollabFile()" class="px-3 py-1 text-xs font-semibold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition flex items-center gap-1 active:scale-95" title="Copy content directly to local BranchLite repository">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <span>Sync to Local</span>
+        </button>
+        <button onclick="closeCollabEditor()" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200/60 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Body Layout: Editor + Commit / History Side Pane -->
+    <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+      <!-- Code Viewport & Editor (Left / Center) -->
+      <div class="lg:col-span-8 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 bg-slate-900 p-3">
+        <div class="flex items-center justify-between pb-2 text-[11px] font-mono text-slate-400 border-b border-slate-800">
+          <span>Source Code Buffer</span>
+          <span id="editor-char-count">0 characters</span>
+        </div>
+        <textarea id="collab-code-editor" class="flex-1 w-full bg-transparent text-emerald-400 font-mono text-xs leading-relaxed p-2 outline-none resize-none selection:bg-slate-700 mt-2" spellcheck="false" placeholder="// File content..."></textarea>
+      </div>
+
+      <!-- Right Pane: Commit & History -->
+      <div class="lg:col-span-4 flex flex-col bg-slate-50/70 overflow-y-auto p-4 space-y-4">
+        <!-- Contributor Commit Box (only enabled if Can Edit or Owner) -->
+        <div id="collab-commit-box" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs space-y-2.5">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+            <span>Record Remote Commit</span>
+          </label>
+          <input type="text" id="input-collab-commit-msg" placeholder="Describe your contribution..." class="w-full bg-slate-50 text-slate-800 text-xs rounded-lg border border-slate-300 p-2 outline-none focus:border-indigo-500 font-sans"/>
+          <button id="btn-submit-collab-commit" onclick="submitCollabCommit()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/></svg>
+            <span>Commit to Cloud</span>
+          </button>
+        </div>
+
+        <!-- Read Only Notice (shown if View Only) -->
+        <div id="collab-readonly-box" class="hidden bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800">
+          <strong>View Only Access:</strong> You can inspect code and sync to your local BranchLite repository, but only contributors with <em>Can Edit</em> permissions can record commits.
+        </div>
+
+        <!-- Commit History List for this file -->
+        <div class="space-y-2 flex-1">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+            <span>Commit History</span>
+            <span id="collab-commit-count" class="font-mono text-[10px] text-slate-500">0 commits</span>
+          </h4>
+          <div id="collab-history-list" class="space-y-2 overflow-y-auto max-h-80">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- COLLABORATE: CONFLICT RESOLUTION MODAL      -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="conflict-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden">
+  <div class="bg-white border border-rose-300 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden anim-in">
+    <div class="p-4 border-b border-rose-200 bg-rose-50 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold">!</div>
+        <div>
+          <h3 class="text-sm font-bold text-rose-900">Simultaneous Modification Conflict Detected</h3>
+          <p class="text-xs text-rose-700">Another contributor pushed changes to this file before your commit. Safe conflict protection prevented accidental overwriting.</p>
+        </div>
+      </div>
+      <button onclick="closeConflictModal()" class="text-rose-500 hover:text-rose-800 p-1 rounded-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      </button>
+    </div>
+
+    <div class="p-4 space-y-3 flex-1 overflow-y-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+        <div class="border border-slate-200 rounded-xl overflow-hidden flex flex-col">
+          <div class="bg-slate-100 p-2 font-bold text-slate-700">Server Latest Version</div>
+          <pre id="conflict-server-content" class="p-3 bg-slate-50 overflow-auto flex-1 max-h-72"></pre>
+        </div>
+        <div class="border border-indigo-200 rounded-xl overflow-hidden flex flex-col">
+          <div class="bg-indigo-50 p-2 font-bold text-indigo-700">Your Local Modification</div>
+          <pre id="conflict-your-content" class="p-3 bg-indigo-50/30 overflow-auto flex-1 max-h-72"></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-2.5">
+      <button onclick="resolveConflictKeepServer()" class="px-3.5 py-2 text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl">Accept Server Version</button>
+      <button onclick="resolveConflictMergeMine()" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Keep Mine &amp; Override</button>
     </div>
   </div>
 </div>
@@ -748,6 +1274,10 @@
         </div>
         <div class="flex items-center gap-1.5">
           <button class="text-[11px] font-medium text-slate-500 hover:text-slate-800 px-2 py-0.5 rounded-md hover:bg-slate-100 transition" onclick="previewFile({type:'working'}, '${escAttr(f)}')">view</button>
+          <button class="px-2 py-1 bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white font-semibold rounded-lg text-[11px] transition flex items-center gap-1 active:scale-95 border border-purple-200" onclick="openShareModalForFile('${escAttr(f)}')" type="button" title="Share with friends on BranchLite Collaborate">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+            <span>Share</span>
+          </button>
           <button class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white font-bold rounded-lg text-[11px] transition duration-150 flex items-center gap-1 active:scale-95 border border-indigo-200 hover:border-transparent" onclick="quickStage('${escAttr(f)}')" type="button">
             + Stage
           </button>
@@ -951,8 +1481,11 @@
           <span class="text-slate-800 hover:text-indigo-600 truncate font-semibold">${escHtml(f.file)}</span>
           <span class="text-[10px] text-slate-400 font-mono">${f.hash && f.hash !== 'working' ? f.hash.substring(0,8) : ''}</span>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-1.5 shrink-0">
           <span class="text-[10px] text-slate-400 font-medium">${f.size || 0}B</span>
+          <button class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 transition" onclick="openShareModalForFile('${escAttr(f.file)}')">
+            Share
+          </button>
           <button class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition" onclick="previewFile(${JSON.stringify(source).replace(/"/g, '&quot;')}, '${escAttr(f.file)}')">
             Preview
           </button>
@@ -1372,6 +1905,1127 @@
 
   // ─── INITIAL LOAD ──────────────────────────────────────
   fetchStatus();
+
+  // ═════════════════════════════════════════════════════════
+  // BRANCHLITE COLLABORATE - CLIENT-SIDE ENGINE
+  // ═════════════════════════════════════════════════════════
+  let collabToken = localStorage.getItem('bl_collab_token') || null;
+  let collabUser = null;
+  let activeMainSection = 'workspace';
+  let authCurrentTab = 'login';
+  let currentSharingFile = null;
+  let currentCollabFile = null;
+  let conflictData = null;
+
+  function collabHeaders() {
+    const h = { 'Content-Type': 'application/json' };
+    if (collabToken) {
+      h['Authorization'] = 'Bearer ' + collabToken;
+      h['X-Collab-Token'] = collabToken;
+    }
+    return h;
+  }
+
+  function formatTime(isoStr) {
+    if (!isoStr) return '';
+    try {
+      const d = new Date(isoStr);
+      return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      return isoStr;
+    }
+  }
+
+  // ─── AUTHENTICATION ─────────────────────────────────────
+  async function checkAuthStatus() {
+    if (!collabToken) {
+      renderUserNav();
+      return;
+    }
+    try {
+      const r = await fetch('/api/auth/me', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.authenticated && d.user) {
+        collabUser = d.user;
+        renderUserNav();
+        checkUnreadNotifications();
+      } else {
+        collabToken = null;
+        collabUser = null;
+        localStorage.removeItem('bl_collab_token');
+        renderUserNav();
+      }
+    } catch (e) {
+      console.warn('Auth check error:', e);
+      renderUserNav();
+    }
+  }
+
+  function renderUserNav() {
+    const nav = document.getElementById('user-nav-status');
+    if (!nav) return;
+    if (collabUser) {
+      nav.innerHTML = `
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 cursor-pointer transition" onclick="switchMainSection('profile')" title="View profile & stats">
+            <div class="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shrink-0 shadow-2xs" style="background-color: ${collabUser.avatar_color || '#6366f1'}">
+              ${(collabUser.display_name || collabUser.username || 'U')[0].toUpperCase()}
+            </div>
+            <div class="flex flex-col text-left leading-none">
+              <span class="text-xs font-bold text-slate-800">${escHtml(collabUser.display_name || collabUser.username)}</span>
+              <span class="text-[10px] font-mono text-indigo-600 font-semibold">@${escHtml(collabUser.username)}</span>
+            </div>
+          </div>
+          <button onclick="collabLogout()" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Log Out">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          </button>
+        </div>`;
+    } else {
+      nav.innerHTML = `
+        <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition active:scale-95" onclick="openAuthModal()">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <span>Sign In / Join</span>
+        </button>`;
+    }
+  }
+
+  function openAuthModal(mode = 'login') {
+    switchAuthTab(mode);
+    const alertBox = document.getElementById('auth-alert');
+    if (alertBox) alertBox.classList.add('hidden');
+    document.getElementById('auth-modal').classList.remove('hidden');
+  }
+
+  function closeAuthModal() {
+    document.getElementById('auth-modal').classList.add('hidden');
+  }
+
+  function switchAuthTab(tab) {
+    authCurrentTab = tab;
+    const btnL = document.getElementById('auth-tab-login');
+    const btnR = document.getElementById('auth-tab-register');
+    const grpName = document.getElementById('auth-group-name');
+    const submitBtn = document.getElementById('auth-submit-btn');
+
+    if (tab === 'login') {
+      btnL.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg bg-white text-indigo-700 shadow-sm transition';
+      btnR.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition';
+      grpName.classList.add('hidden');
+      submitBtn.querySelector('span').textContent = 'Sign In';
+    } else {
+      btnR.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg bg-white text-indigo-700 shadow-sm transition';
+      btnL.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition';
+      grpName.classList.remove('hidden');
+      submitBtn.querySelector('span').textContent = 'Create Account';
+    }
+  }
+
+  async function submitAuthForm() {
+    const alertBox = document.getElementById('auth-alert');
+    alertBox.className = 'p-2.5 rounded-xl text-xs font-medium';
+    alertBox.classList.add('hidden');
+
+    const username = document.getElementById('auth-username').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const name = document.getElementById('auth-name').value.trim();
+
+    if (!username || !password) {
+      alertBox.textContent = 'Please provide both username and password.';
+      alertBox.className = 'p-2.5 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200';
+      alertBox.classList.remove('hidden');
+      return;
+    }
+
+    const endpoint = authCurrentTab === 'register' ? '/api/auth/register' : '/api/auth/login';
+    const payload = { username, password };
+    if (authCurrentTab === 'register') payload.display_name = name || username;
+
+    try {
+      const r = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const d = await r.json();
+      if (!d.success) {
+        alertBox.textContent = d.error || 'Authentication failed.';
+        alertBox.className = 'p-2.5 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200';
+        alertBox.classList.remove('hidden');
+      } else {
+        collabToken = d.token;
+        collabUser = d.user;
+        localStorage.setItem('bl_collab_token', collabToken);
+        renderUserNav();
+        closeAuthModal();
+        logToTerminal(`✓ Welcome to BranchLite Collaborate, ${collabUser.display_name}!`, 'success');
+        if (activeMainSection !== 'workspace') switchMainSection(activeMainSection);
+      }
+    } catch (e) {
+      alertBox.textContent = 'Network or server error: ' + e.message;
+      alertBox.className = 'p-2.5 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200';
+      alertBox.classList.remove('hidden');
+    }
+  }
+
+  async function collabLogout() {
+    if (collabToken) {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: collabHeaders(),
+          body: JSON.stringify({ token: collabToken })
+        });
+      } catch (e) {}
+    }
+    collabToken = null;
+    collabUser = null;
+    localStorage.removeItem('bl_collab_token');
+    renderUserNav();
+    switchMainSection('workspace');
+    logToTerminal('Logged out of BranchLite Collaborate.', 'info');
+  }
+
+  // ─── MAIN SECTION SWITCHER ──────────────────────────────
+  function switchMainSection(section) {
+    activeMainSection = section;
+    const sections = ['workspace', 'repos', 'friends', 'friend-requests', 'shared-with-me', 'shared-by-me', 'contributors', 'notifications', 'profile'];
+
+    sections.forEach(s => {
+      const el = document.getElementById(s === 'workspace' ? 'view-workspace' : `view-${s}`);
+      const btn = document.getElementById(`tab-${s}`);
+      if (el) {
+        if (s === section) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      }
+      if (btn) {
+        if (s === section) {
+          btn.className = 'nav-tab-btn active-tab px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200';
+        } else {
+          btn.className = 'nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-1.5';
+        }
+      }
+    });
+
+    // Check auth on non-workspace sections
+    if (section !== 'workspace' && !collabUser) {
+      openAuthModal();
+      return;
+    }
+
+    if (section === 'repos') loadCollabRepos();
+    else if (section === 'friends') loadFriends();
+    else if (section === 'friend-requests') loadFriendRequests();
+    else if (section === 'shared-with-me') loadSharedWithMe();
+    else if (section === 'shared-by-me') loadSharedByMe();
+    else if (section === 'contributors') loadContributors();
+    else if (section === 'notifications') loadNotifications();
+    else if (section === 'profile') loadProfile();
+  }
+
+  // ─── REPOSITORIES ───────────────────────────────────────
+  function toggleNewRepoForm() {
+    const el = document.getElementById('new-repo-card');
+    if (el) el.classList.toggle('hidden');
+  }
+
+  async function createCollabRepo() {
+    const name = document.getElementById('input-repo-name').value.trim();
+    const desc = document.getElementById('input-repo-desc').value.trim();
+    if (!name) return alert('Repository name is required');
+    try {
+      const r = await fetch('/api/collab/repo_create', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ name, description: desc })
+      });
+      const d = await r.json();
+      if (d.success) {
+        document.getElementById('input-repo-name').value = '';
+        document.getElementById('input-repo-desc').value = '';
+        toggleNewRepoForm();
+        loadCollabRepos();
+        logToTerminal(`✓ Remote repository '${name}' created.`, 'success');
+      } else {
+        alert(d.error || 'Failed to create repository');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  async function loadCollabRepos() {
+    const grid = document.getElementById('repos-grid');
+    if (!grid) return;
+    grid.innerHTML = '<div class="text-xs text-slate-400 font-mono py-8">Loading repositories...</div>';
+    try {
+      const r = await fetch('/api/collab/repos', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const repos = d.repositories || [];
+        if (repos.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full bg-white p-8 rounded-2xl border border-dashed border-slate-300 text-center space-y-2">
+              <p class="text-sm font-bold text-slate-700">No remote repositories yet</p>
+              <p class="text-xs text-slate-500">Create a repository above or share files directly from your workspace!</p>
+            </div>`;
+          return;
+        }
+        grid.innerHTML = '';
+        repos.forEach(repo => {
+          const card = document.createElement('div');
+          card.className = 'bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-card-hover transition space-y-3';
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 font-bold text-xs">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+              </span>
+              <span class="text-[10px] font-mono text-slate-400">${repo.file_count || 0} files</span>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-slate-900">${escHtml(repo.name)}</h4>
+              <p class="text-xs text-slate-500 line-clamp-2 mt-0.5">${escHtml(repo.description || 'No description')}</p>
+            </div>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span>Created ${formatTime(repo.created_at)}</span>
+              <span class="text-emerald-600 font-semibold">Active</span>
+            </div>`;
+          grid.appendChild(card);
+        });
+      }
+    } catch (e) {
+      grid.innerHTML = `<div class="text-xs text-rose-500 font-mono py-8">Failed to load: ${e.message}</div>`;
+    }
+  }
+
+  // ─── FRIENDS & REQUESTS ─────────────────────────────────
+  async function loadFriends() {
+    const grid = document.getElementById('friends-grid');
+    if (!grid) return;
+    grid.innerHTML = '<div class="text-xs text-slate-400 font-mono py-8">Loading friends...</div>';
+    try {
+      const r = await fetch('/api/friends/list', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const friends = d.friends || [];
+        if (friends.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full bg-white p-8 rounded-2xl border border-dashed border-slate-300 text-center space-y-2">
+              <p class="text-sm font-bold text-slate-700">No friends added yet</p>
+              <p class="text-xs text-slate-500">Search for users by username to send friend requests and collaborate!</p>
+              <button onclick="switchMainSection('friend-requests')" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-semibold">Search Users</button>
+            </div>`;
+          return;
+        }
+        grid.innerHTML = '';
+        friends.forEach(f => {
+          const card = document.createElement('div');
+          card.className = 'bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-3 hover:border-indigo-300 transition';
+          card.innerHTML = `
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div class="w-10 h-10 rounded-full text-white font-bold flex items-center justify-center shrink-0 shadow-sm" style="background-color: ${f.avatar_color || '#6366f1'}">
+                ${(f.display_name || f.username)[0].toUpperCase()}
+              </div>
+              <div class="overflow-hidden">
+                <h4 class="text-xs font-bold text-slate-900 truncate">${escHtml(f.display_name)}</h4>
+                <p class="text-[11px] font-mono text-indigo-600 font-semibold truncate">@${escHtml(f.username)}</p>
+                <span class="text-[10px] text-slate-400 font-mono">Friends since ${formatTime(f.friendship_date)}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="removeFriend('${f.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Remove Friend">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+              </button>
+            </div>`;
+          grid.appendChild(card);
+        });
+      }
+    } catch (e) {
+      grid.innerHTML = `<div class="text-xs text-rose-500 font-mono py-8">Failed to load: ${e.message}</div>`;
+    }
+  }
+
+  async function loadFriendRequests() {
+    const incList = document.getElementById('incoming-requests-list');
+    const outList = document.getElementById('outgoing-requests-list');
+    const incBadge = document.getElementById('incoming-count-badge');
+    const outBadge = document.getElementById('outgoing-count-badge');
+    const navBadge = document.getElementById('badge-incoming-requests');
+
+    try {
+      const r = await fetch('/api/friends/requests', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const inc = d.requests.incoming || [];
+        const out = d.requests.outgoing || [];
+
+        incBadge.textContent = inc.length;
+        outBadge.textContent = out.length;
+
+        if (inc.length > 0) {
+          navBadge.textContent = inc.length;
+          navBadge.classList.remove('hidden');
+        } else {
+          navBadge.classList.add('hidden');
+        }
+
+        incList.innerHTML = inc.length === 0 ? '<p class="text-xs text-slate-400 py-4 text-center">No incoming requests</p>' : '';
+        inc.forEach(req => {
+          const item = document.createElement('div');
+          item.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200';
+          item.innerHTML = `
+            <div class="flex items-center gap-2.5 overflow-hidden">
+              <div class="w-8 h-8 rounded-full text-white font-bold flex items-center justify-center shrink-0 text-xs" style="background-color: ${req.avatar_color || '#6366f1'}">
+                ${(req.display_name || req.username)[0].toUpperCase()}
+              </div>
+              <div class="overflow-hidden">
+                <h4 class="text-xs font-bold text-slate-900 truncate">${escHtml(req.display_name)}</h4>
+                <p class="text-[10px] font-mono text-indigo-600">@${escHtml(req.username)}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="respondRequest(${req.id}, 'accept')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition active:scale-95">Accept</button>
+              <button onclick="respondRequest(${req.id}, 'reject')" class="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-semibold transition active:scale-95">Reject</button>
+            </div>`;
+          incList.appendChild(item);
+        });
+
+        outList.innerHTML = out.length === 0 ? '<p class="text-xs text-slate-400 py-4 text-center">No pending sent requests</p>' : '';
+        out.forEach(req => {
+          const item = document.createElement('div');
+          item.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200';
+          item.innerHTML = `
+            <div class="flex items-center gap-2.5 overflow-hidden">
+              <div class="w-8 h-8 rounded-full text-white font-bold flex items-center justify-center shrink-0 text-xs" style="background-color: ${req.avatar_color || '#6366f1'}">
+                ${(req.display_name || req.username)[0].toUpperCase()}
+              </div>
+              <div class="overflow-hidden">
+                <h4 class="text-xs font-bold text-slate-900 truncate">${escHtml(req.display_name)}</h4>
+                <p class="text-[10px] font-mono text-slate-500">@${escHtml(req.username)}</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 text-[10px] font-mono font-semibold rounded-full bg-amber-50 text-amber-700 border border-amber-200">Pending</span>`;
+          outList.appendChild(item);
+        });
+      }
+    } catch (e) {
+      console.warn('Error loading friend requests:', e);
+    }
+  }
+
+  async function searchCollabUsers() {
+    const q = document.getElementById('input-search-users').value.trim();
+    const container = document.getElementById('user-search-results');
+    if (!q) {
+      container.innerHTML = '';
+      return;
+    }
+    container.innerHTML = '<div class="text-xs text-slate-400 font-mono py-2">Searching...</div>';
+    try {
+      const r = await fetch(`/api/friends/search?q=${encodeURIComponent(q)}`, { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const users = d.users || [];
+        if (users.length === 0) {
+          container.innerHTML = '<div class="text-xs text-slate-400 font-mono py-2">No users matching search.</div>';
+          return;
+        }
+        container.innerHTML = '';
+        users.forEach(u => {
+          const item = document.createElement('div');
+          item.className = 'p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2';
+
+          let actionBtn = '';
+          if (u.relation === 'friends') {
+            actionBtn = `<span class="px-2 py-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 rounded-full border border-emerald-200">Friends</span>`;
+          } else if (u.relation === 'outgoing_pending') {
+            actionBtn = `<span class="px-2 py-0.5 text-[10px] font-semibold text-amber-700 bg-amber-50 rounded-full border border-amber-200">Pending</span>`;
+          } else if (u.relation === 'incoming_pending') {
+            actionBtn = `<button onclick="respondRequest(${u.requestId}, 'accept')" class="px-2.5 py-1 text-xs font-semibold bg-emerald-600 text-white rounded-lg">Accept</button>`;
+          } else {
+            actionBtn = `<button onclick="sendFriendRequest('${escAttr(u.username)}')" class="px-2.5 py-1 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-2xs transition active:scale-95">+ Add Friend</button>`;
+          }
+
+          item.innerHTML = `
+            <div class="flex items-center gap-2 overflow-hidden">
+              <div class="w-8 h-8 rounded-full text-white font-bold flex items-center justify-center shrink-0 text-xs" style="background-color: ${u.avatar_color || '#6366f1'}">
+                ${(u.display_name || u.username)[0].toUpperCase()}
+              </div>
+              <div class="overflow-hidden">
+                <h4 class="text-xs font-bold text-slate-900 truncate">${escHtml(u.display_name)}</h4>
+                <p class="text-[10px] font-mono text-indigo-600">@${escHtml(u.username)}</p>
+              </div>
+            </div>
+            <div class="shrink-0">${actionBtn}</div>`;
+          container.appendChild(item);
+        });
+      }
+    } catch (e) {
+      container.innerHTML = `<div class="text-xs text-rose-500 font-mono py-2">Search failed: ${e.message}</div>`;
+    }
+  }
+
+  async function sendFriendRequest(target) {
+    try {
+      const r = await fetch('/api/friends/request', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ target_user: target })
+      });
+      const d = await r.json();
+      if (d.success) {
+        logToTerminal(`✓ Friend request sent to ${target}`, 'success');
+        searchCollabUsers();
+        loadFriendRequests();
+      } else {
+        alert(d.error || 'Failed to send friend request');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  async function respondRequest(requestId, action) {
+    try {
+      const r = await fetch('/api/friends/respond', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ request_id: requestId, action })
+      });
+      const d = await r.json();
+      if (d.success) {
+        logToTerminal(`✓ Friend request ${action}ed.`, 'success');
+        loadFriendRequests();
+        loadFriends();
+      } else {
+        alert(d.error || 'Action failed');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  async function removeFriend(friendId) {
+    if (!confirm('Remove this user from your friends? Any active file shares with them will be revoked.')) return;
+    try {
+      const r = await fetch('/api/friends/remove', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ friend_id: friendId })
+      });
+      const d = await r.json();
+      if (d.success) {
+        logToTerminal('Friend removed.', 'info');
+        loadFriends();
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  // ─── SELECTIVE FILE SHARING ─────────────────────────────
+  async function openShareModalForFile(filename) {
+    if (!collabUser) {
+      openAuthModal();
+      return;
+    }
+    currentSharingFile = filename;
+    document.getElementById('share-modal-filename').textContent = filename;
+    const alertBox = document.getElementById('share-alert');
+    alertBox.classList.add('hidden');
+
+    // 1. Publish to remote storage if not already published
+    try {
+      const pubRes = await fetch('/api/collab/publish_local', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ filename })
+      });
+      const pubData = await pubRes.json();
+      if (!pubData.success) {
+        alert('Could not publish file to Collaborate: ' + (pubData.error || 'Unknown error'));
+        return;
+      }
+      currentSharingFile = pubData.file; // has id, filename, blob_hash
+    } catch (e) {
+      alert('Failed to publish file: ' + e.message);
+      return;
+    }
+
+    // 2. Populate friends dropdown
+    const select = document.getElementById('share-friend-select');
+    select.innerHTML = '<option value="">-- Choose a friend --</option>';
+    try {
+      const frRes = await fetch('/api/friends/list', { headers: collabHeaders() });
+      const frData = await frRes.json();
+      (frData.friends || []).forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f.id;
+        opt.textContent = `${f.display_name} (@${f.username})`;
+        select.appendChild(opt);
+      });
+    } catch (e) {}
+
+    // 3. Load active shares
+    loadActiveShares(currentSharingFile.id);
+    document.getElementById('share-file-modal').classList.remove('hidden');
+  }
+
+  function closeShareModal() {
+    document.getElementById('share-file-modal').classList.add('hidden');
+    currentSharingFile = null;
+  }
+
+  async function loadActiveShares(fileId) {
+    const list = document.getElementById('share-active-list');
+    list.innerHTML = '<div class="text-[11px] text-slate-400 font-mono py-2">Loading active permissions...</div>';
+    try {
+      const r = await fetch(`/api/collab/shares?file_id=${fileId}`, { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const shares = d.shares || [];
+        if (shares.length === 0) {
+          list.innerHTML = '<div class="text-[11px] text-slate-500 font-mono py-2 italic">Currently Private — not shared with anyone.</div>';
+          return;
+        }
+        list.innerHTML = '';
+        shares.forEach(s => {
+          const item = document.createElement('div');
+          item.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs';
+          const permBadge = s.permission === 'edit'
+            ? `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Can Edit</span>`
+            : `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800 border border-amber-200">View Only</span>`;
+
+          item.innerHTML = `
+            <div class="flex items-center gap-2 overflow-hidden">
+              <span class="font-bold text-slate-800">${escHtml(s.display_name)}</span>
+              <span class="text-[10px] font-mono text-slate-400">@${escHtml(s.username)}</span>
+              ${permBadge}
+            </div>
+            <button onclick="revokeFileShare('${fileId}', '${s.user_id}')" class="px-2 py-0.5 text-[11px] font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded transition">
+              Revoke Access
+            </button>`;
+          list.appendChild(item);
+        });
+      }
+    } catch (e) {
+      list.innerHTML = `<div class="text-[11px] text-rose-500 font-mono py-2">Error loading shares: ${e.message}</div>`;
+    }
+  }
+
+  async function submitShareFile() {
+    if (!currentSharingFile) return;
+    const friendId = document.getElementById('share-friend-select').value;
+    const permission = document.getElementById('share-permission-select').value;
+    const alertBox = document.getElementById('share-alert');
+    alertBox.classList.add('hidden');
+
+    if (!friendId) {
+      alertBox.textContent = 'Please choose a friend to share with.';
+      alertBox.className = 'p-2.5 rounded-xl text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200';
+      alertBox.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const r = await fetch('/api/collab/share', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ file_id: currentSharingFile.id, friend_id: friendId, permission })
+      });
+      const d = await r.json();
+      if (d.success) {
+        alertBox.textContent = `✓ Successfully granted ${permission === 'edit' ? 'Can Edit' : 'View Only'} permission!`;
+        alertBox.className = 'p-2.5 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200';
+        alertBox.classList.remove('hidden');
+        loadActiveShares(currentSharingFile.id);
+        logToTerminal(`✓ Shared ${currentSharingFile.filename || 'file'} with friend.`, 'success');
+      } else {
+        alertBox.textContent = d.error || 'Failed to share file.';
+        alertBox.className = 'p-2.5 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200';
+        alertBox.classList.remove('hidden');
+      }
+    } catch (e) {
+      alertBox.textContent = 'Error: ' + e.message;
+      alertBox.className = 'p-2.5 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200';
+      alertBox.classList.remove('hidden');
+    }
+  }
+
+  async function revokeFileShare(fileId, sharedWithId) {
+    try {
+      const r = await fetch('/api/collab/revoke', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ file_id: fileId, shared_with_id: sharedWithId })
+      });
+      const d = await r.json();
+      if (d.success) {
+        logToTerminal('Access revoked.', 'info');
+        if (currentSharingFile) loadActiveShares(currentSharingFile.id);
+        if (activeMainSection === 'shared-by-me') loadSharedByMe();
+      } else {
+        alert(d.error || 'Revoke failed');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  // ─── SHARED WITH ME & LIVE EDITOR ───────────────────────
+  async function loadSharedWithMe() {
+    const grid = document.getElementById('shared-with-me-grid');
+    const badge = document.getElementById('badge-shared-with-me');
+    if (!grid) return;
+    grid.innerHTML = '<div class="text-xs text-slate-400 font-mono py-8">Loading shared files...</div>';
+
+    try {
+      const r = await fetch('/api/collab/shared_with_me', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const files = d.files || [];
+        if (badge) {
+          if (files.length > 0) {
+            badge.textContent = files.length;
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
+        }
+        if (files.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full bg-white p-8 rounded-2xl border border-dashed border-slate-300 text-center space-y-2">
+              <p class="text-sm font-bold text-slate-700">No files shared with you yet</p>
+              <p class="text-xs text-slate-500">When your connected friends grant you View or Edit access to their files, they will appear right here!</p>
+            </div>`;
+          return;
+        }
+        grid.innerHTML = '';
+        files.forEach(f => {
+          const card = document.createElement('div');
+          card.className = 'bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-300 transition space-y-3 flex flex-col justify-between';
+          const permBadge = f.permission === 'edit'
+            ? `<span class="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Can Edit</span>`
+            : `<span class="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> View Only</span>`;
+
+          card.innerHTML = `
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 font-mono text-xs font-bold">
+                    &lt;/&gt;
+                  </span>
+                  <h4 class="font-mono text-xs font-bold text-slate-900 truncate">${escHtml(f.filename)}</h4>
+                </div>
+                ${permBadge}
+              </div>
+              <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                <div class="w-4 h-4 rounded-full text-white text-[9px] font-bold flex items-center justify-center" style="background-color: ${f.owner_avatar || '#6366f1'}">
+                  ${(f.owner_display_name || f.owner_username)[0].toUpperCase()}
+                </div>
+                <span>Owner: <strong>${escHtml(f.owner_display_name)}</strong> (@${escHtml(f.owner_username)})</span>
+              </div>
+              <div class="text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                <span>Version ${f.version || 1} • blob ${f.current_blob_hash.substring(0,8)}</span>
+                <span>${formatTime(f.updated_at)}</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
+              <button onclick="openCollabEditor('${f.file_id}')" class="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-2xs transition active:scale-95 flex items-center justify-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                <span>${f.permission === 'edit' ? 'Edit & Commit' : 'View Code'}</span>
+              </button>
+              <button onclick="syncFileToLocal('${f.file_id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition active:scale-95" title="Sync this file to local BranchLite repository">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+              </button>
+            </div>`;
+          grid.appendChild(card);
+        });
+      }
+    } catch (e) {
+      grid.innerHTML = `<div class="text-xs text-rose-500 font-mono py-8">Failed to load: ${e.message}</div>`;
+    }
+  }
+
+  async function loadSharedByMe() {
+    const tbody = document.getElementById('shared-by-me-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-400">Loading shares...</td></tr>';
+    try {
+      const r = await fetch('/api/collab/shared_by_me', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const shares = d.shares || [];
+        if (shares.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-slate-400 font-sans italic">You haven\'t shared any files yet. Click Share beside any file in your workspace to grant access to a friend.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = '';
+        shares.forEach(s => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50 transition';
+          const permBadge = s.permission === 'edit'
+            ? `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Can Edit</span>`
+            : `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800 border border-amber-200">View Only</span>`;
+
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-bold text-slate-900">${escHtml(s.filename)}</td>
+            <td class="py-3 px-4">
+              <span class="font-bold">${escHtml(s.shared_with_display_name)}</span>
+              <span class="text-slate-400">(@${escHtml(s.shared_with_username)})</span>
+            </td>
+            <td class="py-3 px-4">${permBadge}</td>
+            <td class="py-3 px-4 text-slate-500 text-[11px]">${formatTime(s.created_at)}</td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="revokeFileShare('${s.file_id}', '${s.shared_with_id}')" class="px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg border border-rose-200 transition">
+                Revoke
+              </button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      }
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-rose-500">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  // ─── LIVE COLLABORATIVE CODE EDITOR & COMMITS ───────────
+  async function openCollabEditor(fileId) {
+    currentCollabFile = null;
+    document.getElementById('collab-modal-filename').textContent = 'Loading...';
+    document.getElementById('collab-code-editor').value = '';
+    document.getElementById('collab-history-list').innerHTML = '';
+    document.getElementById('collab-editor-modal').classList.remove('hidden');
+
+    try {
+      const r = await fetch(`/api/collab/file_detail?file_id=${fileId}`, { headers: collabHeaders() });
+      const d = await r.json();
+      if (!d.success) {
+        alert(d.error || 'Access denied');
+        closeCollabEditor();
+        return;
+      }
+      currentCollabFile = d.file;
+
+      document.getElementById('collab-modal-filename').textContent = currentCollabFile.filename;
+      document.getElementById('collab-modal-version').textContent = `v${currentCollabFile.version} • ${currentCollabFile.current_blob_hash.substring(0,8)}`;
+
+      const badge = document.getElementById('collab-modal-perm-badge');
+      const isEditable = (currentCollabFile.user_permission === 'edit' || currentCollabFile.user_permission === 'owner');
+
+      if (isEditable) {
+        badge.textContent = currentCollabFile.user_permission === 'owner' ? 'Owner' : 'Can Edit';
+        badge.className = 'text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200';
+        document.getElementById('collab-commit-box').classList.remove('hidden');
+        document.getElementById('collab-readonly-box').classList.add('hidden');
+        document.getElementById('collab-code-editor').removeAttribute('readonly');
+      } else {
+        badge.textContent = 'View Only';
+        badge.className = 'text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200';
+        document.getElementById('collab-commit-box').classList.add('hidden');
+        document.getElementById('collab-readonly-box').classList.remove('hidden');
+        document.getElementById('collab-code-editor').setAttribute('readonly', 'true');
+      }
+
+      document.getElementById('collab-code-editor').value = currentCollabFile.content || '';
+      document.getElementById('editor-char-count').textContent = `${(currentCollabFile.content || '').length} characters`;
+
+      loadCollabHistory(fileId);
+    } catch (e) {
+      alert('Failed to load file details: ' + e.message);
+      closeCollabEditor();
+    }
+  }
+
+  function closeCollabEditor() {
+    document.getElementById('collab-editor-modal').classList.add('hidden');
+    currentCollabFile = null;
+  }
+
+  async function loadCollabHistory(fileId) {
+    const list = document.getElementById('collab-history-list');
+    const countEl = document.getElementById('collab-commit-count');
+    try {
+      const r = await fetch(`/api/collab/history?file_id=${fileId}`, { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const commits = d.commits || [];
+        countEl.textContent = `${commits.length} commit${commits.length !== 1 ? 's' : ''}`;
+        list.innerHTML = '';
+        commits.forEach(c => {
+          const item = document.createElement('div');
+          item.className = 'p-2.5 rounded-xl bg-white border border-slate-200 text-xs space-y-1 shadow-2xs';
+          item.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-800 truncate">${escHtml(c.message)}</span>
+              <span class="text-[10px] font-mono text-indigo-600 font-semibold">${c.id.substring(0,9)}</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+              <span>by <strong>@${escHtml(c.author_name)}</strong></span>
+              <span>${formatTime(c.timestamp)}</span>
+            </div>`;
+          list.appendChild(item);
+        });
+      }
+    } catch (e) {}
+  }
+
+  async function submitCollabCommit() {
+    if (!currentCollabFile) return;
+    const msg = document.getElementById('input-collab-commit-msg').value.trim();
+    if (!msg) return alert('Please enter a commit message describing your changes.');
+
+    const newContent = document.getElementById('collab-code-editor').value;
+    const baseHash = currentCollabFile.current_blob_hash;
+
+    const btn = document.getElementById('btn-submit-collab-commit');
+    btn.disabled = true;
+
+    try {
+      const r = await fetch('/api/collab/commit', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({
+          file_id: currentCollabFile.id,
+          message: msg,
+          content: newContent,
+          base_blob_hash: baseHash
+        })
+      });
+      const d = await r.json();
+
+      if (d.conflict) {
+        // Safe conflict resolution triggered!
+        openConflictModal(d, newContent);
+      } else if (d.success) {
+        document.getElementById('input-collab-commit-msg').value = '';
+        logToTerminal(`✓ Remote commit recorded by @${d.author}: ${d.commit_id}`, 'success');
+        openCollabEditor(currentCollabFile.id);
+        if (activeMainSection === 'shared-with-me') loadSharedWithMe();
+      } else if (d.unchanged) {
+        alert('No modifications detected.');
+      } else {
+        alert(d.error || 'Failed to commit changes.');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function syncCurrentCollabFile() {
+    if (!currentCollabFile) return;
+    syncFileToLocal(currentCollabFile.id);
+  }
+
+  async function syncFileToLocal(fileId) {
+    try {
+      const r = await fetch('/api/collab/sync_to_local', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ file_id: fileId })
+      });
+      const d = await r.json();
+      if (d.success) {
+        logToTerminal(`✓ Synced '${d.filename}' to local workspace.`, 'success');
+        if (d.status) renderState(d.status);
+      } else {
+        alert(d.error || 'Sync failed');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  // ─── CONFLICT RESOLUTION ────────────────────────────────
+  function openConflictModal(conflictRes, myContent) {
+    conflictData = { ...conflictRes, myContent };
+    document.getElementById('conflict-server-content').textContent = conflictRes.server_content || '';
+    document.getElementById('conflict-your-content').textContent = myContent || '';
+    document.getElementById('conflict-modal').classList.remove('hidden');
+  }
+
+  function closeConflictModal() {
+    document.getElementById('conflict-modal').classList.add('hidden');
+    conflictData = null;
+  }
+
+  function resolveConflictKeepServer() {
+    if (!conflictData || !currentCollabFile) return;
+    document.getElementById('collab-code-editor').value = conflictData.server_content || '';
+    currentCollabFile.current_blob_hash = conflictData.server_blob_hash;
+    closeConflictModal();
+    logToTerminal('Accepted server latest version.', 'info');
+  }
+
+  async function resolveConflictMergeMine() {
+    if (!conflictData || !currentCollabFile) return;
+    // Override with base hash set to current server hash
+    try {
+      const r = await fetch('/api/collab/commit', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({
+          file_id: currentCollabFile.id,
+          message: 'Resolved conflict: applied contributor modification',
+          content: conflictData.myContent,
+          base_blob_hash: conflictData.server_blob_hash
+        })
+      });
+      const d = await r.json();
+      if (d.success) {
+        closeConflictModal();
+        logToTerminal('✓ Conflict resolved and committed successfully.', 'success');
+        openCollabEditor(currentCollabFile.id);
+      } else {
+        alert(d.error || 'Failed to resolve conflict.');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  // ─── CONTRIBUTORS ───────────────────────────────────────
+  async function loadContributors() {
+    const grid = document.getElementById('contributors-grid');
+    if (!grid) return;
+    grid.innerHTML = '<div class="text-xs text-slate-400 font-mono py-8">Loading contributors...</div>';
+    try {
+      const r = await fetch('/api/collab/contributors', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const list = d.contributors || [];
+        if (list.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full bg-white p-8 rounded-2xl border border-dashed border-slate-300 text-center space-y-2">
+              <p class="text-sm font-bold text-slate-700">No contributors yet</p>
+              <p class="text-xs text-slate-500">Collaborator commits will be attributed here with commit rankings and activity history.</p>
+            </div>`;
+          return;
+        }
+        grid.innerHTML = '';
+        list.forEach(c => {
+          const card = document.createElement('div');
+          card.className = 'bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3.5';
+          card.innerHTML = `
+            <div class="w-12 h-12 rounded-2xl text-white font-extrabold text-lg flex items-center justify-center shrink-0 shadow-md" style="background-color: ${c.avatar_color || '#6366f1'}">
+              ${(c.display_name || c.username)[0].toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold text-slate-900 truncate">${escHtml(c.display_name)}</h4>
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  ${c.commit_count} commit${c.commit_count !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <p class="text-[11px] font-mono text-indigo-600 font-semibold truncate">@${escHtml(c.username)}</p>
+              <div class="text-[10px] text-slate-400 font-mono mt-1 truncate">
+                Files: ${escHtml(c.files_contributed || 'all')}
+              </div>
+            </div>`;
+          grid.appendChild(card);
+        });
+      }
+    } catch (e) {
+      grid.innerHTML = `<div class="text-xs text-rose-500 font-mono py-8">Failed to load: ${e.message}</div>`;
+    }
+  }
+
+  // ─── NOTIFICATIONS ──────────────────────────────────────
+  async function checkUnreadNotifications() {
+    if (!collabToken) return;
+    try {
+      const r = await fetch('/api/notifications/list', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const badge = document.getElementById('nav-notif-badge');
+        if (badge) {
+          if (d.unread_count > 0) {
+            badge.textContent = d.unread_count;
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  async function loadNotifications() {
+    const list = document.getElementById('notifications-list');
+    if (!list) return;
+    list.innerHTML = '<div class="text-xs text-slate-400 font-mono py-8">Loading notifications...</div>';
+    try {
+      const r = await fetch('/api/notifications/list', { headers: collabHeaders() });
+      const d = await r.json();
+      if (d.success) {
+        const notifs = d.notifications || [];
+        if (notifs.length === 0) {
+          list.innerHTML = '<div class="text-xs text-slate-400 font-mono py-8 text-center">No notifications yet.</div>';
+          return;
+        }
+        list.innerHTML = '';
+        notifs.forEach(n => {
+          const item = document.createElement('div');
+          const isUnread = !n.is_read;
+          item.className = `p-3 rounded-xl border transition flex items-center justify-between gap-3 ${isUnread ? 'bg-indigo-50/50 border-indigo-200 font-medium' : 'bg-white border-slate-200 text-slate-600'}`;
+          item.innerHTML = `
+            <div class="flex items-center gap-2.5 overflow-hidden">
+              <span class="w-2 h-2 rounded-full ${isUnread ? 'bg-indigo-600' : 'bg-transparent'} shrink-0"></span>
+              <p class="text-xs text-slate-800">${escHtml(n.message)}</p>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400 shrink-0">${formatTime(n.created_at)}</span>`;
+          list.appendChild(item);
+        });
+      }
+    } catch (e) {
+      list.innerHTML = `<div class="text-xs text-rose-500 font-mono py-8">Failed to load: ${e.message}</div>`;
+    }
+  }
+
+  async function markAllNotificationsRead() {
+    try {
+      await fetch('/api/notifications/read', {
+        method: 'POST',
+        headers: collabHeaders(),
+        body: JSON.stringify({ notif_id: -1 })
+      });
+      loadNotifications();
+      checkUnreadNotifications();
+    } catch (e) {}
+  }
+
+  // ─── PROFILE ────────────────────────────────────────────
+  async function loadProfile() {
+    if (!collabUser) return;
+    document.getElementById('profile-display-name').textContent = collabUser.display_name;
+    document.getElementById('profile-username').textContent = '@' + collabUser.username;
+    document.getElementById('profile-user-id').textContent = '#' + collabUser.id;
+    document.getElementById('profile-joined-date').textContent = 'Joined ' + formatTime(collabUser.created_at);
+
+    const avatar = document.getElementById('profile-avatar');
+    avatar.style.backgroundColor = collabUser.avatar_color || '#6366f1';
+    avatar.textContent = (collabUser.display_name || collabUser.username)[0].toUpperCase();
+
+    // Load stats
+    try {
+      const [fRes, shRes, cRes] = await Promise.all([
+        fetch('/api/friends/list', { headers: collabHeaders() }),
+        fetch('/api/collab/shared_by_me', { headers: collabHeaders() }),
+        fetch('/api/collab/contributors', { headers: collabHeaders() })
+      ]);
+      const [fData, shData, cData] = await Promise.all([fRes.json(), shRes.json(), cRes.json()]);
+      document.getElementById('profile-stat-friends').textContent = (fData.friends || []).length;
+      document.getElementById('profile-stat-shares').textContent = (shData.shares || []).length;
+
+      const myCommits = (cData.contributors || []).find(c => c.author_id === collabUser.id);
+      document.getElementById('profile-stat-commits').textContent = myCommits ? myCommits.commit_count : 0;
+    } catch (e) {}
+  }
+
+  // Initialize collaborate check
+  checkAuthStatus();
 </script>
 </body>
 </html>
